@@ -22,13 +22,11 @@ import java.util.List;
 public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonViewHolder>{
 
     public static class PersonViewHolder extends RecyclerView.ViewHolder {
-        CardView cv;
         TextView userName;
         TextView userBirthdate;
 
         PersonViewHolder(View itemView) {
             super(itemView);
-            cv = (CardView)itemView.findViewById(R.id.user_cv);
             userName = (TextView)itemView.findViewById(R.id.user_name);
             userBirthdate = (TextView)itemView.findViewById(R.id.user_birthdate);
         }
@@ -53,13 +51,12 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
 
     @Override
     public void onBindViewHolder(PersonViewHolder holder, int position) {
-        holder.userName.setText("Ernesto");//users.get(position).userName
-        holder.userBirthdate.setText("12/04/1976");
+        holder.userName.setText(users.get(position).getName());
+        holder.userBirthdate.setText(users.get(position).getBirthdate());
     }
 
     @Override
     public int getItemCount() {
-//        return users.size();
-        return 8;
+        return users.size();
     }
 }

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">IUDapp</string>
     <string name="action_update">Update</string>
+
+    <string name="cargando">Loading</string>
+    <string name="espere_cargando">Wait, loading…</string>
 </resources>

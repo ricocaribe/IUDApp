@@ -8,6 +8,8 @@ public class Usuario {
     public String name;
     @SerializedName("birthdate")
     public String birthdate;
+    @SerializedName("id")
+    public String id;
 
     public String getName() {
         return this.name;
@@ -16,4 +18,9 @@ public class Usuario {
     public String getBirthdate() {
         return birthdate;
     }
+
+    public String getId() {
+        return id;
+    }
+
 }
