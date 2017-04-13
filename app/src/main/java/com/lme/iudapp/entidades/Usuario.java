@@ -9,7 +9,7 @@ public class Usuario {
     @SerializedName("birthdate")
     public String birthdate;
     @SerializedName("id")
-    public String id;
+    public int id;
 
     public String getName() {
         return this.name;
@@ -19,8 +19,19 @@ public class Usuario {
         return birthdate;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setBirthdate(String birthdate) {
+        this.birthdate = birthdate;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

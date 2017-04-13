@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class UsersFragmento extends Fragment {
+public class UsersFragmento extends Fragment implements UsersAdaptador.UserActions{
 
     private RecyclerView users_rv;
     private ProgressDialog progress;
@@ -53,6 +54,15 @@ public class UsersFragmento extends Fragment {
         return view;
     }
 
+    @Override
+    public void getUserToUpdate(View v, int id) {
+        new GetUserUpdateTask().execute(id);
+    }
+
+    @Override
+    public void getUserToRemove(View v, int id) {
+        new GetUserRemoveTask().execute(id);
+    }
 
     private class GetUsersTask extends AsyncTask<Void, Void, ArrayList<Usuario>> {
 
@@ -84,12 +94,133 @@ public class UsersFragmento extends Fragment {
             if(null!=result){
                 LinearLayoutManager llm = new LinearLayoutManager(getActivity());
                 users_rv.setLayoutManager(llm);
-                UsersAdaptador usersAdaptador = new UsersAdaptador(result);
+                UsersAdaptador usersAdaptador = new UsersAdaptador(result, getActivity());
+                usersAdaptador.setUserActionsClickListener(UsersFragmento.this);
                 users_rv.setAdapter(usersAdaptador);
                 users_rv.getAdapter().notifyDataSetChanged();
                 progress.dismiss();
 
                 users_refresh_layout.setRefreshing(false);
+            }
+        }
+    }
+
+
+    private class GetUserRemoveTask extends AsyncTask<Integer, Void, Usuario> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Usuario doInBackground(Integer... userId) {
+
+            try {
+                return Endpoints.getUser(userId[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Usuario result) {
+            super.onPostExecute(result);
+            if(null!=result){
+                Log.i("Usuario existe->remove", result.getName());
+                new RemoveUsersTask().execute(result.getId());
+            }
+        }
+    }
+
+
+    private class RemoveUsersTask extends AsyncTask<Integer, Void, Usuario> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Usuario doInBackground(Integer... userId) {
+
+            try {
+                return Endpoints.removeUser(userId[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Usuario result) {
+            super.onPostExecute(result);
+            if(null!=result){
+                Log.i("Usuario borrado", result.getName());
+                new GetUsersTask().execute();
+            }
+        }
+    }
+
+
+    private class GetUserUpdateTask extends AsyncTask<Integer, Void, Usuario> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Usuario doInBackground(Integer... userId) {
+
+            try {
+                return Endpoints.getUser(userId[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Usuario result) {
+            super.onPostExecute(result);
+            if(null!=result){
+                Log.i("Usuario existe->update", result.getName());
+                new UpdateUserTask().execute(result);
+            }
+        }
+    }
+
+
+    private class UpdateUserTask extends AsyncTask<Usuario, Void, Usuario> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Usuario doInBackground(Usuario... user) {
+
+            try {
+                return Endpoints.updateUser(user[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Usuario result) {
+            super.onPostExecute(result);
+            if(null!=result){
+                Log.i("Usuario borrado", result.getName());
+                new GetUsersTask().execute();
             }
         }
     }

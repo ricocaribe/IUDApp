@@ -4,4 +4,11 @@
 
     <string name="cargando">Cargando</string>
     <string name="espere_cargando">Espere, consultando…</string>
+    <string name="eliminar_usuario">Eliminar</string>
+
+    <string name="editar_nombre_usuario">Nombre</string>
+    <string name="editar_nombre_usuario_titulo">Editar usuario</string>
+
+    <string name="boton_aceptar">Aceptar</string>
+    <string name="boton_cancelar">Cancelar</string>
 </resources>

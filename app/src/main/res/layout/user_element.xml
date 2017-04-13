@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.lme.iudapp.MainActivity">
 
     <TextView
         android:id="@+id/user_name"
-        android:text="asdasdasdada"
         android:layout_alignParentTop="true"
         style="@style/title" />
 
     <TextView
         android:id="@+id/user_birthdate"
         android:layout_below="@+id/user_name"
-        android:text="asdasdasdada"
         style="@style/subtitle" />
 
     <View

@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.View;
 import android.view.Menu;
@@ -37,30 +38,40 @@ public class MainActivity extends AppCompatActivity{
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Usuario usuario = new Usuario();
+                usuario.setName("usuario3");
+                usuario.setBirthdate("1957-04-05T00:00:00");
+                new CreateUsersTask().execute(usuario);
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Añadir cumpleaños", null).show();
             }
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    private class CreateUsersTask extends AsyncTask<Usuario, Void, Usuario> {
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_update) {
-            return true;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
         }
 
-        return super.onOptionsItemSelected(item);
+        @Override
+        protected Usuario doInBackground(Usuario... user) {
+
+            try {
+                return Endpoints.createUser(user[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Usuario result) {
+            super.onPostExecute(result);
+            if(null!=result){
+                Log.i("Usuario creado", result.getName());
+            }
+        }
     }
 }
