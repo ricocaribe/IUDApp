@@ -4,31 +4,25 @@ package com.lme.iudapp.adaptadores;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.lme.iudapp.MainActivity;
 import com.lme.iudapp.R;
-import com.lme.iudapp.Utilidades.Endpoints;
 import com.lme.iudapp.entidades.Usuario;
 
 import java.util.List;
 
-/**
- * Adaptador para mostrar las comidas más pedidas en la sección "Inicio"
- */
+
 public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonViewHolder>{
 
     private List<Usuario> users;
@@ -36,7 +30,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     private UserActions userActionsCallback;
 
     public interface UserActions {
-        void getUserToUpdate(View v, int id);
+        void getUserToUpdate(View v, int id, String nombre, String birthdate);
 
         void getUserToRemove(View v, int id);
     }
@@ -60,10 +54,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         @Override
         public void onClick(View view) {
             Log.i("onClick", id + "");
-            /*if (removeCallback != null) {
-                removeCallback.getUser(view, id);
-            }*/
-            showEditAlert(userName.getText().toString());
+            showEditAlert(id, userName.getText().toString(), userBirthdate.getText().toString(), view);
 
         }
 
@@ -123,21 +114,64 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     }
 
 
-    public void showEditAlert(String nombre_usuario){
+    public void showEditAlert(final int id, final String nombre_usuario, final String birthdate_usuario, final View v){
         AlertDialog.Builder alert = new AlertDialog.Builder(context);
+        alert.setTitle(context.getResources().getString(R.string.editar_usuario_titulo));
 
-        final EditText edittext = new EditText(context);
-        alert.setTitle(context.getResources().getString(R.string.editar_nombre_usuario_titulo));
-        alert.setMessage(context.getResources().getString(R.string.editar_nombre_usuario));
-        edittext.setText(nombre_usuario);
-        alert.setView(edittext);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View editDialoglayout = inflater.inflate(R.layout.dialog_layout, null);
+
+        final EditText userName = (EditText) editDialoglayout.findViewById(R.id.edt_user_name);
+        userName.setText(nombre_usuario);
+        userName.addTextChangedListener(new TextWatcher()  {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s)  {
+                if (userName.getText().toString().length() <= 0) {
+                    userName.setError("Nombre vacío");
+                } else {
+                    userName.setError(null);
+                }
+            }
+        });
+
+        final EditText userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
+        userBirthdate.setText(birthdate_usuario);
+        userBirthdate.addTextChangedListener(new TextWatcher()  {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s)  {
+                if (userBirthdate.getText().toString().length() <= 0) {
+                    userBirthdate.setError("Fecha de nacimiento vacía");
+                } else {
+                    userBirthdate.setError(null);
+                }
+            }
+        });
+
+        alert.setView(editDialoglayout);
 
         alert.setPositiveButton(context.getResources().getString(R.string.boton_aceptar), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
 
-                String YouEditTextValue = edittext.getText().toString();
                 if (userActionsCallback != null) {
-                    //removeCallback.updateUser(view, id);
+                    userActionsCallback.getUserToUpdate(v, id, userName.getText().toString(), userBirthdate.getText().toString());
                 }
             }
         });

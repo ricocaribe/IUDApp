@@ -12,8 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.lme.iudapp.MainActivity;
 import com.lme.iudapp.R;
-import com.lme.iudapp.Utilidades.Endpoints;
+import com.lme.iudapp.utilidades.Endpoints;
 import com.lme.iudapp.adaptadores.UsersAdaptador;
 import com.lme.iudapp.entidades.Usuario;
 
@@ -25,11 +26,8 @@ import java.util.ArrayList;
 public class UsersFragmento extends Fragment implements UsersAdaptador.UserActions{
 
     private RecyclerView users_rv;
-    private ProgressDialog progress;
     private SwipeRefreshLayout users_refresh_layout;
-
-    public UsersFragmento() {
-    }
+    private UsersAdaptador usersAdaptador;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,8 +35,8 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         users_rv = (RecyclerView) view.findViewById(R.id.birthdates_rv);
         users_rv.setHasFixedSize(true);
-        //registerForContextMenu(users_rv);
-
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        users_rv.setLayoutManager(llm);
         users_refresh_layout = (SwipeRefreshLayout) view.findViewById(R.id.users_refresh_layout);
 
         new GetUsersTask().execute();
@@ -55,7 +53,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
     }
 
     @Override
-    public void getUserToUpdate(View v, int id) {
+    public void getUserToUpdate(View v, int id, String nombre, String birthdate) {
         new GetUserUpdateTask().execute(id);
     }
 
@@ -64,7 +62,13 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         new GetUserRemoveTask().execute(id);
     }
 
+    public void getUsers(){
+        new GetUsersTask().execute();
+    }
+
+
     private class GetUsersTask extends AsyncTask<Void, Void, ArrayList<Usuario>> {
+        private ProgressDialog progress;
 
         @Override
         protected void onPreExecute() {
@@ -92,9 +96,8 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         protected void onPostExecute(ArrayList<Usuario> result) {
             super.onPostExecute(result);
             if(null!=result){
-                LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-                users_rv.setLayoutManager(llm);
-                UsersAdaptador usersAdaptador = new UsersAdaptador(result, getActivity());
+                usersAdaptador = null;
+                usersAdaptador = new UsersAdaptador(result, getActivity());
                 usersAdaptador.setUserActionsClickListener(UsersFragmento.this);
                 users_rv.setAdapter(usersAdaptador);
                 users_rv.getAdapter().notifyDataSetChanged();
