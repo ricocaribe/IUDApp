@@ -11,7 +11,7 @@
     <string name="editar_usuario_titulo">Editar usuario</string>
     <string name="crear_usuario_titulo">Crear usuario</string>
     <string name="crear_usuario_error">Usuario no creado</string>
-    <string name="crear_usuario_snackbar">Crear</string>
+    <string name="editar_usuario_error">Usuario no actualizado</string>
 
     <string name="boton_aceptar">Aceptar</string>
     <string name="boton_cancelar">Cancelar</string>

@@ -148,7 +148,12 @@ public class MainActivity extends AppCompatActivity{
                     usuario.setBirthdate(userBirthdate.getText().toString());
                     new CreateUsersTask().execute(usuario);
                 }
-                else showSnackBarError();
+                else {
+                    UsersFragmento usersFragmento = (UsersFragmento) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
+                    if (usersFragmento != null && usersFragmento.isInLayout()) {
+                        usersFragmento.showSnackBarError(getResources().getString(R.string.crear_usuario_error));
+                    }
+                }
             }
         });
 
@@ -159,16 +164,5 @@ public class MainActivity extends AppCompatActivity{
         });
 
         alert.show();
-    }
-
-
-    public void showSnackBarError(){
-        View parentLayout = findViewById(R.id.usersFragment);
-        Snackbar snackbar = Snackbar.make(parentLayout, getResources().getString(R.string.crear_usuario_error), Snackbar.LENGTH_SHORT);
-        View snackbarView = snackbar.getView();
-        snackbarView.setBackgroundColor(Color.RED);
-        TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.BLACK);
-        snackbar.show();
     }
 }

@@ -30,6 +30,8 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     private UserActions userActionsCallback;
 
     public interface UserActions {
+        void showError(String errorMessage);
+
         void getUserToUpdate(View v, int id, String nombre, String birthdate);
 
         void getUserToRemove(View v, int id);
@@ -169,9 +171,16 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
 
         alert.setPositiveButton(context.getResources().getString(R.string.boton_aceptar), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-
-                if (userActionsCallback != null) {
-                    userActionsCallback.getUserToUpdate(v, id, userName.getText().toString(), userBirthdate.getText().toString());
+                if(userName.getError()==null && userBirthdate.getError()==null &&
+                        !userName.getText().toString().equals("") && !userBirthdate.getText().toString().equals("")){
+                    if (userActionsCallback != null) {
+                        userActionsCallback.getUserToUpdate(v, id, userName.getText().toString(), userBirthdate.getText().toString());
+                    }
+                }
+                else {
+                    if (userActionsCallback != null) {
+                        userActionsCallback.showError(context.getResources().getString(R.string.editar_usuario_error));
+                    }
                 }
             }
         });

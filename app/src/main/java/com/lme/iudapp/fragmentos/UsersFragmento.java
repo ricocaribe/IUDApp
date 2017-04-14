@@ -1,7 +1,9 @@
 package com.lme.iudapp.fragmentos;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.lme.iudapp.MainActivity;
 import com.lme.iudapp.R;
@@ -44,12 +47,16 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         users_refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Refresh items
                 new GetUsersTask().execute();
             }
         });
 
         return view;
+    }
+
+    @Override
+    public void showError(String errorMessage) {
+        showSnackBarError(errorMessage);
     }
 
     @Override
@@ -132,7 +139,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
             if(null!=result){
-                Log.i("Usuario existe->remove", result.getName());
+                Log.i(getClass().getSimpleName(), String.format("Usuario existe, borramos: %s", result.getName()));
                 new RemoveUsersTask().execute(result.getId());
             }
         }
@@ -162,7 +169,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
             if(null!=result){
-                Log.i("Usuario borrado", result.getName());
+                Log.i(getClass().getSimpleName(), String.format("Usuario borrado: %s", result.getName()));
                 new GetUsersTask().execute();
             }
         }
@@ -192,7 +199,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
             if(null!=result){
-                Log.i("Usuario existe->update", result.getName());
+                Log.i(getClass().getSimpleName(), String.format("Usuario existe, actualizamos: %s", result.getName()));
                 new UpdateUserTask().execute(result);
             }
         }
@@ -222,9 +229,20 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
             if(null!=result){
-                Log.i("Usuario borrado", result.getName());
+                Log.i(getClass().getSimpleName(), String.format("Usuario actualizado a: %s", result.getName()));
                 new GetUsersTask().execute();
             }
         }
+    }
+
+
+    public void showSnackBarError(String errorMessage){
+        View parentLayout = getActivity().findViewById(R.id.usersFragment);
+        Snackbar snackbar = Snackbar.make(parentLayout, errorMessage, Snackbar.LENGTH_SHORT);
+        View snackbarView = snackbar.getView();
+        snackbarView.setBackgroundColor(Color.RED);
+        TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.BLACK);
+        snackbar.show();
     }
 }
