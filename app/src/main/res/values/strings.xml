@@ -2,16 +2,22 @@
     <string name="app_name">IUDapp</string>
     <string name="action_update">Update</string>
 
+    <!--Dialogos y alertas-->
     <string name="cargando">Loading</string>
     <string name="espere_cargando">Wait, loading…</string>
     <string name="eliminar_usuario">Delete</string>
+    <string name="mensaje_error_conn">Something went wrong…</string>
+    <string name="mensaje_error_refresh">Update</string>
 
+    <!--Editar usuario-->
     <string name="editar_nombre_usuario">Name</string>
     <string name="editar_birthdate_usuario">Birthdate</string>
     <string name="editar_usuario_titulo">Edit user</string>
+    <string name="editar_usuario_error">User not updated</string>
+
+    <!--Crear usuario-->
     <string name="crear_usuario_titulo">Create user</string>
     <string name="crear_usuario_error">User not created</string>
-    <string name="editar_usuario_error">User not updated</string>
 
     <string name="boton_aceptar">Accept</string>
     <string name="boton_cancelar">Cancel</string>

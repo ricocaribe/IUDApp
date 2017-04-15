@@ -47,16 +47,14 @@ public class MainActivity extends AppCompatActivity{
 
     private class CreateUsersTask extends AsyncTask<Usuario, Void, Usuario> {
 
-        private ProgressDialog progress;
+        UsersFragmento usersFragmento = (UsersFragmento) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progress = new ProgressDialog(MainActivity.this);
-            progress.setTitle(getResources().getString(R.string.cargando));
-            progress.setMessage(getResources().getString(R.string.espere_cargando));
-            progress.setCancelable(false);
-            progress.show();
+            if (usersFragmento != null && usersFragmento.isInLayout()) {
+                usersFragmento.showLoadingDialog();
+            }
         }
 
         @Override
@@ -74,9 +72,10 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
-            progress.dismiss();
+            if (usersFragmento != null && usersFragmento.isInLayout()) {
+                usersFragmento.dismissLoadingDialog();
+            }
             if(null!=result){
-                UsersFragmento usersFragmento = (UsersFragmento) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
                 if (usersFragmento != null && usersFragmento.isInLayout()) {
                     usersFragmento.getUsers();
                 }

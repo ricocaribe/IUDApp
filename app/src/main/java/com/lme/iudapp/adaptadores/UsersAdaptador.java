@@ -32,7 +32,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     public interface UserActions {
         void showError(String errorMessage);
 
-        void getUserToUpdate(View v, int id, String nombre, String birthdate);
+        void getUserToUpdate(View v, Usuario user);
 
         void getUserToRemove(View v, int id);
     }
@@ -56,7 +56,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         @Override
         public void onClick(View view) {
             Log.i("onClick", id + "");
-            showEditAlert(id, userName.getText().toString(), userBirthdate.getText().toString(), view);
+            showEditAlert(users.get(getAdapterPosition()), view);
 
         }
 
@@ -116,7 +116,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     }
 
 
-    public void showEditAlert(final int id, final String nombre_usuario, final String birthdate_usuario, final View v){
+    public void showEditAlert(final Usuario user, final View v){
         AlertDialog.Builder alert = new AlertDialog.Builder(context);
         alert.setTitle(context.getResources().getString(R.string.editar_usuario_titulo));
 
@@ -124,7 +124,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         View editDialoglayout = inflater.inflate(R.layout.dialog_layout, null);
 
         final EditText userName = (EditText) editDialoglayout.findViewById(R.id.edt_user_name);
-        userName.setText(nombre_usuario);
+        userName.setText(user.getName());
         userName.addTextChangedListener(new TextWatcher()  {
 
             @Override
@@ -146,7 +146,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         });
 
         final EditText userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
-        userBirthdate.setText(birthdate_usuario);
+        userBirthdate.setText(user.getBirthdate());
         userBirthdate.addTextChangedListener(new TextWatcher()  {
 
             @Override
@@ -174,7 +174,9 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
                 if(userName.getError()==null && userBirthdate.getError()==null &&
                         !userName.getText().toString().equals("") && !userBirthdate.getText().toString().equals("")){
                     if (userActionsCallback != null) {
-                        userActionsCallback.getUserToUpdate(v, id, userName.getText().toString(), userBirthdate.getText().toString());
+                        user.setName(userName.getText().toString());
+                        user.setBirthdate(userBirthdate.getText().toString());
+                        userActionsCallback.getUserToUpdate(v, user);
                     }
                 }
                 else {

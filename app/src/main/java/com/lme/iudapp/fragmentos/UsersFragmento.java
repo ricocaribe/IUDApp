@@ -1,12 +1,14 @@
 package com.lme.iudapp.fragmentos;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.lme.iudapp.MainActivity;
 import com.lme.iudapp.R;
 import com.lme.iudapp.utilidades.Endpoints;
 import com.lme.iudapp.adaptadores.UsersAdaptador;
@@ -30,7 +31,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
 
     private RecyclerView users_rv;
     private SwipeRefreshLayout users_refresh_layout;
-    private UsersAdaptador usersAdaptador;
+    private ProgressDialog progress;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,7 +48,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         users_refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new GetUsersTask().execute();
+                getUsers();
             }
         });
 
@@ -60,8 +61,8 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
     }
 
     @Override
-    public void getUserToUpdate(View v, int id, String nombre, String birthdate) {
-        new GetUserUpdateTask().execute(id);
+    public void getUserToUpdate(View v, Usuario user) {
+        new GetUserUpdateTask().execute(user);
     }
 
     @Override
@@ -69,10 +70,10 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         new GetUserRemoveTask().execute(id);
     }
 
+
     public void getUsers(){
         new GetUsersTask().execute();
     }
-
 
     private class GetUsersTask extends AsyncTask<Void, Void, ArrayList<Usuario>> {
         private ProgressDialog progress;
@@ -80,38 +81,27 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progress = new ProgressDialog(getActivity());
-            progress.setTitle(getResources().getString(R.string.cargando));
-            progress.setMessage(getResources().getString(R.string.espere_cargando));
-            progress.setCancelable(false);
-            progress.show();
+            showLoadingDialog();
         }
 
         @Override
         protected ArrayList<Usuario> doInBackground(Void... params) {
-
-            try {
-                return Endpoints.getUsers();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-
+            return Endpoints.getUsers();
         }
 
         @Override
         protected void onPostExecute(ArrayList<Usuario> result) {
             super.onPostExecute(result);
+            dismissLoadingDialog();
             if(null!=result){
-                usersAdaptador = null;
-                usersAdaptador = new UsersAdaptador(result, getActivity());
+                UsersAdaptador usersAdaptador = new UsersAdaptador(result, getActivity());
                 usersAdaptador.setUserActionsClickListener(UsersFragmento.this);
                 users_rv.setAdapter(usersAdaptador);
                 users_rv.getAdapter().notifyDataSetChanged();
-                progress.dismiss();
-
                 users_refresh_layout.setRefreshing(false);
             }
+            else showErrorAlert();
+
         }
     }
 
@@ -121,6 +111,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            showLoadingDialog();
         }
 
         @Override
@@ -138,26 +129,61 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         @Override
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
+            dismissLoadingDialog();
             if(null!=result){
                 Log.i(getClass().getSimpleName(), String.format("Usuario existe, borramos: %s", result.getName()));
                 new RemoveUsersTask().execute(result.getId());
             }
+            else showErrorAlert();
         }
     }
 
 
-    private class RemoveUsersTask extends AsyncTask<Integer, Void, Usuario> {
+    private class RemoveUsersTask extends AsyncTask<Integer, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            showLoadingDialog();
         }
 
         @Override
-        protected Usuario doInBackground(Integer... userId) {
+        protected Void doInBackground(Integer... userId) {
 
             try {
-                return Endpoints.removeUser(userId[0]);
+                Endpoints.removeUser(userId[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            dismissLoadingDialog();
+            Log.i(getClass().getSimpleName(), "Usuario borrado");
+            getUsers();
+        }
+    }
+
+
+    private class GetUserUpdateTask extends AsyncTask<Usuario, Void, Usuario> {
+
+        Usuario userToEdit;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showLoadingDialog();
+        }
+
+        @Override
+        protected Usuario doInBackground(Usuario... user) {
+
+            try {
+                userToEdit = user[0];
+                return Endpoints.getUser(user[0].getId());
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -168,40 +194,12 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         @Override
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
+            dismissLoadingDialog();
             if(null!=result){
-                Log.i(getClass().getSimpleName(), String.format("Usuario borrado: %s", result.getName()));
-                new GetUsersTask().execute();
+                Log.i(getClass().getSimpleName(), String.format("Usuario existe, actualizamos: %s", userToEdit.getName()));
+                new UpdateUserTask().execute(userToEdit);
             }
-        }
-    }
-
-
-    private class GetUserUpdateTask extends AsyncTask<Integer, Void, Usuario> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Usuario doInBackground(Integer... userId) {
-
-            try {
-                return Endpoints.getUser(userId[0]);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-
-        }
-
-        @Override
-        protected void onPostExecute(Usuario result) {
-            super.onPostExecute(result);
-            if(null!=result){
-                Log.i(getClass().getSimpleName(), String.format("Usuario existe, actualizamos: %s", result.getName()));
-                new UpdateUserTask().execute(result);
-            }
+            else showErrorAlert();
         }
     }
 
@@ -230,8 +228,9 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
             super.onPostExecute(result);
             if(null!=result){
                 Log.i(getClass().getSimpleName(), String.format("Usuario actualizado a: %s", result.getName()));
-                new GetUsersTask().execute();
+                getUsers();
             }
+            else showErrorAlert();
         }
     }
 
@@ -244,5 +243,34 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.BLACK);
         snackbar.show();
+    }
+
+
+    public void showErrorAlert(){
+        new AlertDialog.Builder(getActivity())
+                .setTitle(getActivity().getResources().getString(R.string.app_name))
+                .setMessage(getActivity().getResources().getString(R.string.mensaje_error_conn))
+                .setPositiveButton(getActivity().getResources().getString(R.string.mensaje_error_refresh), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // continue with delete
+                        getUsers();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+
+    public void showLoadingDialog(){
+        progress = new ProgressDialog(getActivity());
+        progress.setTitle(getResources().getString(R.string.cargando));
+        progress.setMessage(getResources().getString(R.string.espere_cargando));
+        progress.setCancelable(false);
+        progress.show();
+    }
+
+
+    public void dismissLoadingDialog(){
+        if(null!=progress) progress.dismiss();
     }
 }
