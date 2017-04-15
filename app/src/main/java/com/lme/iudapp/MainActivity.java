@@ -1,39 +1,29 @@
 package com.lme.iudapp;
 
 import android.app.DatePickerDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.lme.iudapp.adaptadores.UsersAdaptador;
 import com.lme.iudapp.fragmentos.UsersFragmento;
 import com.lme.iudapp.utilidades.Endpoints;
 import com.lme.iudapp.entidades.Usuario;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -117,14 +107,14 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void afterTextChanged(Editable s)  {
                 if (userName.getText().toString().length() <= 0) {
-                    userName.setError("Nombre vacío");
+                    userName.setError(getResources().getString(R.string.editar_nombre_usuario_error));
                 } else {
                     userName.setError(null);
                 }
             }
         });
 
-        if(null==userBirthdate) userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
+        userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
         userBirthdate.setHint(getResources().getString(R.string.editar_birthdate_usuario));
         userBirthdate.setOnClickListener(new View.OnClickListener() {
 
@@ -139,17 +129,18 @@ public class MainActivity extends AppCompatActivity{
 
         alert.setPositiveButton(getResources().getString(R.string.boton_aceptar), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                if(userName.getError()==null && !userName.getText().toString().equals("") && !userBirthdate.getText().toString().equals("")){
-                    Usuario usuario = new Usuario();
-                    usuario.setName(userName.getText().toString());
-                    UsersFragmento usersFragmento = (UsersFragmento) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
-                    if (usersFragmento != null && usersFragmento.isInLayout()) {
+                UsersFragmento usersFragmento = (UsersFragmento) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
+
+                if(userName.getError()==null &&
+                    !userName.getText().toString().equals("") &&
+                    !userBirthdate.getText().toString().equals("") &&
+                    usersFragmento != null && usersFragmento.isInLayout()){
+                        Usuario usuario = new Usuario();
+                        usuario.setName(userName.getText().toString());
                         usuario.setBirthdate(usersFragmento.dateToIsoConverter(userBirthdate.getText().toString()));
-                    }
-                    new CreateUsersTask().execute(usuario);
+                        new CreateUsersTask().execute(usuario);
                 }
                 else {
-                    UsersFragmento usersFragmento = (UsersFragmento) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
                     if (usersFragmento != null && usersFragmento.isInLayout()) {
                         usersFragmento.showSnackBarError(getResources().getString(R.string.crear_usuario_error));
                     }

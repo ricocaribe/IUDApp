@@ -14,6 +14,7 @@
     <string name="editar_birthdate_usuario">Nacimiento</string>
     <string name="editar_usuario_titulo">Editar usuario</string>
     <string name="editar_usuario_error">Usuario no actualizado</string>
+    <string name="editar_nombre_usuario_error">Nombre vacío</string>
 
     <!--Crear usuario-->
     <string name="crear_usuario_titulo">Crear usuario</string>

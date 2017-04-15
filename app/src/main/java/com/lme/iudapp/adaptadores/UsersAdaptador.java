@@ -151,7 +151,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
             @Override
             public void afterTextChanged(Editable s)  {
                 if (userName.getText().toString().length() <= 0) {
-                    userName.setError("Nombre vacío");
+                    userName.setError(context.getResources().getString(R.string.editar_nombre_usuario_error));
                 } else {
                     userName.setError(null);
                 }

@@ -14,6 +14,7 @@
     <string name="editar_birthdate_usuario">Birthdate</string>
     <string name="editar_usuario_titulo">Edit user</string>
     <string name="editar_usuario_error">User not updated</string>
+    <string name="editar_nombre_usuario_error">Empty name</string>
 
     <!--Crear usuario-->
     <string name="crear_usuario_titulo">Create user</string>
