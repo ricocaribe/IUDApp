@@ -16,6 +16,10 @@
     <string name="editar_usuario_error">Usuario no actualizado</string>
     <string name="editar_nombre_usuario_error">Nombre vacío</string>
 
+    <!--Borrar usuario-->
+    <string name="alert_delete_user_title">Borrar usuario</string>
+    <string name="alert_delete_user_message">¿Seguro que quieres eliminar este usuario?</string>
+
     <!--Crear usuario-->
     <string name="crear_usuario_titulo">Crear usuario</string>
     <string name="crear_usuario_error">Usuario no creado</string>

@@ -74,24 +74,24 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
 
         @Override
         public boolean onLongClick(final View view) {
-            PopupMenu popup = new PopupMenu(context, view, Gravity.CENTER);
-            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    switch (item.getItemId()) {
-                        case R.id.action_delete:
-                            // read the listItemPosition here
+            new AlertDialog.Builder(context)
+                    .setTitle(context.getResources().getString(R.string.alert_delete_user_title))
+                    .setMessage(context.getResources().getString(R.string.alert_delete_user_message))
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // continue with delete
                             if (userActionsCallback != null) {
                                 userActionsCallback.getUserToRemove(view, id);
                             }
-                            return true;
-                        default:
-                            return false;
-                    }
-                }
-            });
-            popup.inflate(R.menu.menu_main);
-            popup.show();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_menu_delete)
+                    .show();
             return true;
         }
     }
