@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity{
                 }
                 else {
                     if (usersFragmento != null && usersFragmento.isInLayout()) {
-                        usersFragmento.showSnackBarError(getResources().getString(R.string.crear_usuario_error));
+                        usersFragmento.showSnackBarError(getResources().getString(R.string.crear_usuario_error), false);
                     }
                 }
             }

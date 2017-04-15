@@ -15,6 +15,7 @@
     <string name="editar_usuario_titulo">Editar usuario</string>
     <string name="editar_usuario_error">Usuario no actualizado</string>
     <string name="editar_nombre_usuario_error">Nombre vacío</string>
+    <string name="editar_btn_deshacer">Deshacer</string>
 
     <!--Borrar usuario-->
     <string name="alert_delete_user_title">Borrar usuario</string>

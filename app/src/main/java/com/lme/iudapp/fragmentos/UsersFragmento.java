@@ -38,6 +38,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
     private RecyclerView users_rv;
     private SwipeRefreshLayout users_refresh_layout;
     private ProgressDialog progress;
+    private Usuario lastEditedUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,11 +64,12 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
 
     @Override
     public void showError(String errorMessage) {
-        showSnackBarError(errorMessage);
+        showSnackBarError(errorMessage, false);
     }
 
     @Override
-    public void getUserToUpdate(View v, Usuario user) {
+    public void getUserToUpdate(View v, Usuario user, Usuario lastUser) {
+        lastEditedUser = lastUser;
         new GetUserUpdateTask().execute(user);
     }
 
@@ -190,7 +192,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
 
     private class GetUserUpdateTask extends AsyncTask<Usuario, Void, Usuario> {
 
-        Usuario userToEdit;
+        Usuario userToUpdate;
 
         @Override
         protected void onPreExecute() {
@@ -201,7 +203,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         protected Usuario doInBackground(Usuario... user) {
 
             try {
-                userToEdit = user[0];
+                userToUpdate = user[0];
                 return Endpoints.getUser(user[0].getId());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -214,8 +216,8 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
             if(null!=result){
-                Log.i(getClass().getSimpleName(), String.format("Usuario existe, actualizamos: %s", userToEdit.getName()));
-                new UpdateUserTask().execute(userToEdit);
+                Log.i(getClass().getSimpleName(), String.format("Usuario existe, actualizamos: %s", result.getName()));
+                new UpdateUserTask().execute(userToUpdate);
             }
             else showErrorAlert();
         }
@@ -247,19 +249,32 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
             if(null!=result){
                 Log.i(getClass().getSimpleName(), String.format("Usuario actualizado a: %s", result.getName()));
                 getUsers();
+                showSnackBarError("Usuario editado", true);
             }
             else showErrorAlert();
         }
     }
 
 
-    public void showSnackBarError(String errorMessage){
+    public void showSnackBarError(String errorMessage, boolean action){
         View parentLayout = getActivity().findViewById(R.id.usersFragment);
-        Snackbar snackbar = Snackbar.make(parentLayout, errorMessage, Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(parentLayout, errorMessage, Snackbar.LENGTH_LONG);
         View snackbarView = snackbar.getView();
         snackbarView.setBackgroundColor(Color.RED);
         TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.BLACK);
+        if (action) {
+            snackbarView.setBackgroundColor(Color.GRAY);
+            textView.setTextColor(Color.WHITE);
+            snackbar.setAction(getActivity().getResources().getString(R.string.editar_btn_deshacer), new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new GetUserUpdateTask().execute(lastEditedUser);
+                }
+            });
+        }
+
+
         snackbar.show();
     }
 

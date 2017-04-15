@@ -5,14 +5,10 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
@@ -29,7 +25,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 
 public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonViewHolder>{
@@ -38,11 +33,12 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     private List<Usuario> users;
     private Context context;
     private UserActions userActionsCallback;
+    private Usuario lastEditedUser;
 
     public interface UserActions {
         void showError(String errorMessage);
 
-        void getUserToUpdate(View v, Usuario user);
+        void getUserToUpdate(View v, Usuario user, Usuario lastEditedUser);
 
         void getUserToRemove(View v, int id);
 
@@ -58,10 +54,12 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         TextView userName;
         TextView userBirthdate;
         int id;
+
         PersonViewHolder(View itemView) {
             super(itemView);
             userName = (TextView)itemView.findViewById(R.id.user_name);
             userBirthdate = (TextView)itemView.findViewById(R.id.user_birthdate);
+
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
@@ -127,7 +125,10 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     }
 
 
-    public void showEditAlert(final Usuario user, final View v){
+    private void showEditAlert(final Usuario user, final View v){
+
+        saveLastEditedUser(user);
+
         AlertDialog.Builder alert = new AlertDialog.Builder(context);
         alert.setTitle(context.getResources().getString(R.string.editar_usuario_titulo));
 
@@ -180,7 +181,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
                     if (userActionsCallback != null) {
                         user.setName(userName.getText().toString());
                         user.setBirthdate(userActionsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
-                        userActionsCallback.getUserToUpdate(v, user);
+                        userActionsCallback.getUserToUpdate(v, user, lastEditedUser);
                     }
                 }
                 else {
@@ -201,9 +202,17 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     }
 
 
-    Calendar myCalendar = Calendar.getInstance();
+    private void saveLastEditedUser(Usuario userToEdit){
+        lastEditedUser = new Usuario();
+        lastEditedUser.setId(userToEdit.getId());
+        lastEditedUser.setName(userToEdit.getName());
+        lastEditedUser.setBirthdate(userToEdit.getBirthdate());
+    }
 
-    DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+    private Calendar myCalendar = Calendar.getInstance();
+
+    private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
