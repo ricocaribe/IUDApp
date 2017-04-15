@@ -180,6 +180,14 @@ public class Endpoints implements Serializable{
             conn.setRequestProperty("Accept", "application/json");
             conn.setConnectTimeout(100000);
             conn.setReadTimeout(100000);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+            StringBuilder sb = new StringBuilder();
+            String inputLine;
+            while ((inputLine = br.readLine()) != null) {
+                sb.append(inputLine);
+            }
+
             conn.disconnect();
 
         } catch (java.io.IOException e) {

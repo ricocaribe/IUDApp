@@ -68,14 +68,12 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
 
         @Override
         public void onClick(View view) {
-            Log.i("onClick", id + "");
             showEditAlert(users.get(getAdapterPosition()), view);
 
         }
 
         @Override
         public boolean onLongClick(final View view) {
-            Log.i("onLongClick", id + "");
             PopupMenu popup = new PopupMenu(context, view, Gravity.CENTER);
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override

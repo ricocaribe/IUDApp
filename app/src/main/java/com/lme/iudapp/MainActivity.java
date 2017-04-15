@@ -60,14 +60,12 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         protected Usuario doInBackground(Usuario... user) {
-
             try {
                 return Endpoints.createUser(user[0]);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
-
         }
 
         @Override

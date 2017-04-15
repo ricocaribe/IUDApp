@@ -135,7 +135,6 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            showLoadingDialog();
         }
 
         @Override
@@ -153,7 +152,6 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         @Override
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
-            dismissLoadingDialog();
             if(null!=result){
                 Log.i(getClass().getSimpleName(), String.format("Usuario existe, borramos: %s", result.getName()));
                 new RemoveUsersTask().execute(result.getId());
@@ -168,7 +166,6 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            showLoadingDialog();
         }
 
         @Override
@@ -185,7 +182,6 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            dismissLoadingDialog();
             Log.i(getClass().getSimpleName(), "Usuario borrado");
             getUsers();
         }
@@ -199,7 +195,6 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            showLoadingDialog();
         }
 
         @Override
@@ -218,7 +213,6 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         @Override
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
-            dismissLoadingDialog();
             if(null!=result){
                 Log.i(getClass().getSimpleName(), String.format("Usuario existe, actualizamos: %s", userToEdit.getName()));
                 new UpdateUserTask().execute(userToEdit);
