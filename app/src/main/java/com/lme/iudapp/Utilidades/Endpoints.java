@@ -108,13 +108,9 @@ public class Endpoints implements Serializable{
             conn.setConnectTimeout(100000);
             conn.setReadTimeout(100000);
 
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name", user.getName());
-            jsonObject.put("birthdate", user.getBirthdate());
-
+            Gson gson = new Gson();
             OutputStream os = conn.getOutputStream();
-            os.write(jsonObject.toString().getBytes("UTF-8"));
-            //os.write(user.toString().getBytes("UTF-8"));
+            os.write(gson.toJson(user).getBytes("UTF-8"));
             os.close();
 
             StringBuilder sb = new StringBuilder();
@@ -129,15 +125,11 @@ public class Endpoints implements Serializable{
                 br.close();
 
                 conn.disconnect();
-                Gson gson = new Gson();
-
                 return gson.fromJson(sb.toString(), Usuario.class);
 
             } else return null;
 
         }catch (java.io.IOException e) {
-            return null;
-        }catch (JSONException e) {
             return null;
         }
     }
@@ -155,13 +147,9 @@ public class Endpoints implements Serializable{
             conn.setConnectTimeout(100000);
             conn.setReadTimeout(100000);
 
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name", user.getName());
-            jsonObject.put("birthdate", user.getBirthdate());
-
+            Gson gson = new Gson();
             OutputStream os = conn.getOutputStream();
-            os.write(jsonObject.toString().getBytes("UTF-8"));
-            //os.write(user.toString().getBytes("UTF-8"));
+            os.write(gson.toJson(user).getBytes("UTF-8"));
             os.close();
 
             StringBuilder sb = new StringBuilder();
@@ -177,13 +165,10 @@ public class Endpoints implements Serializable{
 
                 conn.disconnect();
 
-                Gson gson = new Gson();
                 return gson.fromJson(sb.toString(), Usuario.class);
             } else return null;
 
         }catch (java.io.IOException e) {
-            return null;
-        }catch (JSONException e) {
             return null;
         }
     }
