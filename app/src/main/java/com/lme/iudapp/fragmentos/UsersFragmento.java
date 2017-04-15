@@ -249,12 +249,17 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
             if(null!=result){
                 Log.i(getClass().getSimpleName(), String.format("Usuario actualizado a: %s", result.getName()));
                 getUsers();
-                showSnackBarError("Usuario editado", true);
+                if(!sameUsers(result, lastEditedUser)) showSnackBarError("Usuario editado", true);
             }
             else showErrorAlert();
         }
     }
 
+    public boolean sameUsers(Usuario user1, Usuario user2){
+        return user1.getId()==user2.getId() &&
+                user1.getName().equals(user2.getName()) &&
+                user1.getBirthdate().equals(user2.getBirthdate());
+    }
 
     public void showSnackBarError(String errorMessage, boolean action){
         View parentLayout = getActivity().findViewById(R.id.usersFragment);
