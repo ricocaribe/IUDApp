@@ -18,6 +18,7 @@
         android:id="@+id/edt_user_birthdate"
         android:inputType="date"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:focusable="false"/>
 
 </LinearLayout>

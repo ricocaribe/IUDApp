@@ -1,5 +1,6 @@
 package com.lme.iudapp;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,7 +28,16 @@ import com.lme.iudapp.fragmentos.UsersFragmento;
 import com.lme.iudapp.utilidades.Endpoints;
 import com.lme.iudapp.entidades.Usuario;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
 public class MainActivity extends AppCompatActivity{
+
+    private EditText userBirthdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,26 +124,14 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        final EditText userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
+        if(null==userBirthdate) userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
         userBirthdate.setHint(getResources().getString(R.string.editar_birthdate_usuario));
-        userBirthdate.setText("1978-05-06T00:00:00");
-        userBirthdate.addTextChangedListener(new TextWatcher()  {
+        userBirthdate.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s)  {
-                if (userBirthdate.getText().toString().length() <= 0) {
-                    userBirthdate.setError("Fecha de nacimiento vacía");
-                } else {
-                    userBirthdate.setError(null);
-                }
+            public void onClick(View v) {
+                new DatePickerDialog(MainActivity.this, date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 
@@ -140,11 +139,13 @@ public class MainActivity extends AppCompatActivity{
 
         alert.setPositiveButton(getResources().getString(R.string.boton_aceptar), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                if(userName.getError()==null && userBirthdate.getError()==null &&
-                        !userName.getText().toString().equals("") && !userBirthdate.getText().toString().equals("")){
+                if(userName.getError()==null && !userName.getText().toString().equals("") && !userBirthdate.getText().toString().equals("")){
                     Usuario usuario = new Usuario();
                     usuario.setName(userName.getText().toString());
-                    usuario.setBirthdate(userBirthdate.getText().toString());
+                    UsersFragmento usersFragmento = (UsersFragmento) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
+                    if (usersFragmento != null && usersFragmento.isInLayout()) {
+                        usuario.setBirthdate(usersFragmento.dateToIsoConverter(userBirthdate.getText().toString()));
+                    }
                     new CreateUsersTask().execute(usuario);
                 }
                 else {
@@ -163,5 +164,27 @@ public class MainActivity extends AppCompatActivity{
         });
 
         alert.show();
+    }
+
+
+    Calendar myCalendar = Calendar.getInstance();
+
+    DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            myCalendar.set(Calendar.YEAR, year);
+            myCalendar.set(Calendar.MONTH, monthOfYear);
+            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            updateLabel();
+        }
+    };
+
+    private void updateLabel() {
+
+        String myFormat = "MM/dd/yyyy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        userBirthdate.setText(sdf.format(myCalendar.getTime()));
     }
 }

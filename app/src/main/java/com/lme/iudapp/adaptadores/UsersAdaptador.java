@@ -1,6 +1,7 @@
 package com.lme.iudapp.adaptadores;
 
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
@@ -14,17 +15,26 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lme.iudapp.R;
 import com.lme.iudapp.entidades.Usuario;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 
 public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonViewHolder>{
 
+    private EditText userBirthdate;
     private List<Usuario> users;
     private Context context;
     private UserActions userActionsCallback;
@@ -35,6 +45,9 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         void getUserToUpdate(View v, Usuario user);
 
         void getUserToRemove(View v, int id);
+
+        String dateToIsoConverter(String date);
+
     }
 
     public void setUserActionsClickListener(UserActions listener) {
@@ -105,7 +118,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     @Override
     public void onBindViewHolder(PersonViewHolder holder, int position) {
         holder.userName.setText(users.get(position).getName());
-        holder.userBirthdate.setText(users.get(position).getBirthdate());
+        holder.userBirthdate.setText(ISOToReadableDate(users.get(position).getBirthdate()));
         holder.id = users.get(position).getId();
     }
 
@@ -145,25 +158,19 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
             }
         });
 
-        final EditText userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
-        userBirthdate.setText(user.getBirthdate());
-        userBirthdate.addTextChangedListener(new TextWatcher()  {
+        userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
+
+        userBirthdate.setHint(context.getResources().getString(R.string.editar_birthdate_usuario));
+        userBirthdate.setText(ISOToReadableDate(user.getBirthdate()));
+        userBirthdate.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s)  {
-                if (userBirthdate.getText().toString().length() <= 0) {
-                    userBirthdate.setError("Fecha de nacimiento vacía");
-                } else {
-                    userBirthdate.setError(null);
-                }
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(context, date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH));
+                String[] date = userBirthdate.getText().toString().split("/");
+                datePickerDialog.updateDate(Integer.parseInt(date[2]), Integer.parseInt(date[1]), Integer.parseInt(date[0]));
+                datePickerDialog.show();
             }
         });
 
@@ -171,11 +178,10 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
 
         alert.setPositiveButton(context.getResources().getString(R.string.boton_aceptar), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                if(userName.getError()==null && userBirthdate.getError()==null &&
-                        !userName.getText().toString().equals("") && !userBirthdate.getText().toString().equals("")){
+                if(userName.getError()==null && !userName.getText().toString().equals("") && !userBirthdate.getText().toString().equals("")){
                     if (userActionsCallback != null) {
                         user.setName(userName.getText().toString());
-                        user.setBirthdate(userBirthdate.getText().toString());
+                        user.setBirthdate(userActionsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
                         userActionsCallback.getUserToUpdate(v, user);
                     }
                 }
@@ -194,5 +200,40 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         });
 
         alert.show();
+    }
+
+
+    Calendar myCalendar = Calendar.getInstance();
+
+    DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            myCalendar.set(Calendar.YEAR, year);
+            myCalendar.set(Calendar.MONTH, monthOfYear);
+            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            updateLabel();
+        }
+
+    };
+
+    private void updateLabel() {
+        String myFormat = "MM/dd/yyyy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        userBirthdate.setText(sdf.format(myCalendar.getTime()));
+    }
+
+    private String ISOToReadableDate(String isoDate){
+        SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+        DateFormat targetFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+
+        try {
+            Date date = originalFormat.parse(isoDate);
+            return targetFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

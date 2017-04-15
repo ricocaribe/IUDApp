@@ -22,7 +22,13 @@ import com.lme.iudapp.utilidades.Endpoints;
 import com.lme.iudapp.adaptadores.UsersAdaptador;
 import com.lme.iudapp.entidades.Usuario;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -70,6 +76,24 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         new GetUserRemoveTask().execute(id);
     }
 
+    @Override
+    public String dateToIsoConverter(String date) {
+        return readableDateToISO(date);
+    }
+
+
+    private String readableDateToISO(String isoDate){
+        SimpleDateFormat originalFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        DateFormat targetFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+
+        try {
+            Date date = originalFormat.parse(isoDate);
+            return targetFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public void getUsers(){
         new GetUsersTask().execute();
