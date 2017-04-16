@@ -4,18 +4,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.lme.iudapp.entidades.Usuario;
+import com.lme.iudapp.fragmentos.FragmentoUsuarios;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class Endpoints implements Serializable{
+public class Endpoints{
 
     private static final String GET_ALL = "http://hello-world.innocv.com/api/user/getall";
     private static final String GET_USER = "http://hello-world.innocv.com/api/user/get";
@@ -26,7 +27,7 @@ public class Endpoints implements Serializable{
     private static final int CONNECTED_TO = 10000;
     private static final int READ_TO = 10000;
 
-    public static ArrayList<Usuario> getUsers() {
+    public static ArrayList<Usuario> getUsers(FragmentoUsuarios fragmentoUsuarios) {
 
         try {
             URL url = new URL(GET_ALL);
@@ -37,29 +38,36 @@ public class Endpoints implements Serializable{
             conn.setReadTimeout(READ_TO);
 
             int HttpResult = conn.getResponseCode();
-            if (HttpResult == HttpURLConnection.HTTP_OK) {
-                BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+            switch (HttpResult){
+                case 200:
+                    BufferedReader br = new BufferedReader(new InputStreamReader(
+                            conn.getInputStream(), "utf-8"));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line).append("\n");
+                    }
+                    br.close();
 
-                StringBuilder sb = new StringBuilder();
-                String inputLine;
-                while ((inputLine = br.readLine()) != null) {
-                    sb.append(inputLine);
-                }
-
-                conn.disconnect();
-
-                Type listType = new TypeToken<ArrayList<Usuario>>() {
-                }.getType();
-                return new GsonBuilder().create().fromJson(sb.toString(), listType);
-            } else return null;
-
-        } catch (java.io.IOException e) {
-            return null;
+                    conn.disconnect();
+                    Type listType = new TypeToken<ArrayList<Usuario>>() {}.getType();
+                    return new GsonBuilder().create().fromJson(sb.toString(), listType);
+                case 404:
+                    fragmentoUsuarios.showAlert(404);
+                    break;
+                case 500:
+                    fragmentoUsuarios.showAlert(500);
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            fragmentoUsuarios.showAlert(-1);
         }
+        return null;
     }
 
 
-    public static Usuario getUser(int id){
+    public static Usuario getUser(int id, FragmentoUsuarios fragmentoUsuarios){
 
         try {
             String stringBuilder = GET_USER + "?id=" +
@@ -73,27 +81,42 @@ public class Endpoints implements Serializable{
             conn.setReadTimeout(READ_TO);
 
             int HttpResult = conn.getResponseCode();
-            if (HttpResult == HttpURLConnection.HTTP_OK) {
-                BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-                StringBuilder sb = new StringBuilder();
-                String inputLine;
-                while ((inputLine = br.readLine()) != null) {
-                    sb.append(inputLine);
-                }
+            switch (HttpResult){
+                case 200:
+                    BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+                    StringBuilder sb = new StringBuilder();
+                    String inputLine;
+                    while ((inputLine = br.readLine()) != null) {
+                        sb.append(inputLine);
+                    }
 
-                conn.disconnect();
+                    conn.disconnect();
 
-                Gson gson = new Gson();
-                return gson.fromJson(sb.toString(), Usuario.class);
-            } else return null;
+                    if(!sb.toString().equals("null")){
+                        Gson gson = new Gson();
+                        return gson.fromJson(sb.toString(), Usuario.class);
+                    }
+                    else {
+                        fragmentoUsuarios.showAlert(404);
+                        break;
+                    }
+                case 404:
+                    fragmentoUsuarios.showAlert(404);
+                    break;
+                case 500:
+                    fragmentoUsuarios.showAlert(500);
+                    break;
+            }
 
-        } catch (java.io.IOException e) {
-            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            fragmentoUsuarios.showAlert(-1);
         }
+        return null;
     }
 
 
-    public static Usuario updateUser(Usuario user){
+    public static Usuario updateUser(Usuario user, FragmentoUsuarios fragmentoUsuarios){
         try {
             URL url = new URL(UPDATE_USER);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -111,27 +134,35 @@ public class Endpoints implements Serializable{
 
             StringBuilder sb = new StringBuilder();
             int HttpResult = conn.getResponseCode();
-            if (HttpResult == HttpURLConnection.HTTP_OK) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(
-                        conn.getInputStream(), "utf-8"));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line).append("\n");
-                }
-                br.close();
+            switch (HttpResult){
+                case 200:
+                    BufferedReader br = new BufferedReader(new InputStreamReader(
+                            conn.getInputStream(), "utf-8"));
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line).append("\n");
+                    }
+                    br.close();
 
-                conn.disconnect();
-                return gson.fromJson(sb.toString(), Usuario.class);
+                    conn.disconnect();
+                    return gson.fromJson(sb.toString(), Usuario.class);
+                case 404:
+                    fragmentoUsuarios.showAlert(404);
+                    break;
+                case 500:
+                    fragmentoUsuarios.showAlert(500);
+                    break;
+            }
 
-            } else return null;
-
-        }catch (java.io.IOException e) {
-            return null;
+        }catch (IOException e) {
+            e.printStackTrace();
+            fragmentoUsuarios.showAlert(-1);
         }
+        return null;
     }
 
 
-    public static Usuario createUser(Usuario user){
+    public static Usuario createUser(Usuario user, FragmentoUsuarios fragmentoUsuarios){
 
         try {
             URL url = new URL(CREATE_USER);
@@ -150,27 +181,36 @@ public class Endpoints implements Serializable{
 
             StringBuilder sb = new StringBuilder();
             int HttpResult = conn.getResponseCode();
-            if (HttpResult == HttpURLConnection.HTTP_OK) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(
-                        conn.getInputStream(), "utf-8"));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line).append("\n");
-                }
-                br.close();
+            switch (HttpResult){
+                case 200:
+                    BufferedReader br = new BufferedReader(new InputStreamReader(
+                            conn.getInputStream(), "utf-8"));
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line).append("\n");
+                    }
+                    br.close();
 
-                conn.disconnect();
+                    conn.disconnect();
+                    return gson.fromJson(sb.toString(), Usuario.class);
+                case 404:
+                    fragmentoUsuarios.showAlert(404);
+                    break;
+                case 500:
+                    fragmentoUsuarios.showAlert(500);
+                    break;
+            }
 
-                return gson.fromJson(sb.toString(), Usuario.class);
-            } else return null;
-
-        }catch (java.io.IOException e) {
-            return null;
+        }catch (IOException e) {
+            e.printStackTrace();
+            fragmentoUsuarios.showAlert(-1);
         }
+
+        return null;
     }
 
 
-    public static void removeUser(int id){
+    public static void removeUser(int id, FragmentoUsuarios fragmentoUsuarios){
 
         try{
             String stringBuilder = REMOVE_USER + "?id=" +
@@ -183,17 +223,29 @@ public class Endpoints implements Serializable{
             conn.setConnectTimeout(CONNECTED_TO);
             conn.setReadTimeout(READ_TO);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-            StringBuilder sb = new StringBuilder();
-            String inputLine;
-            while ((inputLine = br.readLine()) != null) {
-                sb.append(inputLine);
+            int HttpResult = conn.getResponseCode();
+            switch (HttpResult){
+                case 200:
+                    BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+                    StringBuilder sb = new StringBuilder();
+                    String inputLine;
+                    while ((inputLine = br.readLine()) != null) {
+                        sb.append(inputLine);
+                    }
+
+                    conn.disconnect();
+                    break;
+                case 404:
+                    fragmentoUsuarios.showAlert(404);
+                    break;
+                case 500:
+                    fragmentoUsuarios.showAlert(500);
+                    break;
             }
 
-            conn.disconnect();
-
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+            fragmentoUsuarios.showAlert(-1);
         }
     }
 }

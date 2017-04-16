@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.lme.iudapp.R;
 import com.lme.iudapp.entidades.Usuario;
+import com.lme.iudapp.utilidades.UserActions;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -35,21 +36,13 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     private UserActions userActionsCallback;
     private Usuario lastEditedUser;
 
-    public interface UserActions {
-        void showMessage(String errorMessage);
-
-        void getUserToUpdate(View v, Usuario user, Usuario lastEditedUser);
-
-        void getUserToRemove(View v, int id);
-
-        String dateToIsoConverter(String date);
-
-        boolean sameUsers(Usuario user1, Usuario user2);
-
-    }
-
     public void setUserActionsClickListener(UserActions listener) {
         this.userActionsCallback = listener;
+    }
+
+    public UsersAdaptador(List<Usuario> users, Context c){
+        this.context = c;
+        this.users = users;
     }
 
     class PersonViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
@@ -80,9 +73,8 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             // continue with delete
-                            if (userActionsCallback != null) {
-                                userActionsCallback.getUserToRemove(view, id);
-                            }
+                            if (userActionsCallback != null) userActionsCallback.getUserToRemove(view, id);
+
                         }
                     })
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -96,11 +88,6 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         }
     }
 
-
-    public UsersAdaptador(List<Usuario> users, Context c){
-        this.context = c;
-        this.users = users;
-    }
 
     @Override
     public PersonViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -186,7 +173,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
 
                 }
                 else if (userActionsCallback != null)
-                        userActionsCallback.showMessage(context.getResources().getString(R.string.editar_usuario_error));
+                        userActionsCallback.showEditedBar();
             }
         });
 
@@ -236,6 +223,5 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
             userBirthdate.setText(sdf.format(myCalendar.getTime()));
         }
-
     };
 }

@@ -21,6 +21,7 @@ import com.lme.iudapp.R;
 import com.lme.iudapp.utilidades.Endpoints;
 import com.lme.iudapp.adaptadores.UsersAdaptador;
 import com.lme.iudapp.entidades.Usuario;
+import com.lme.iudapp.utilidades.UserActions;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -30,7 +31,7 @@ import java.util.Date;
 import java.util.Locale;
 
 
-public class UsersFragmento extends Fragment implements UsersAdaptador.UserActions{
+public class FragmentoUsuarios extends Fragment implements UserActions {
 
     private RecyclerView users_rv;
     private SwipeRefreshLayout users_refresh_layout;
@@ -60,8 +61,13 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
     }
 
     @Override
-    public void showMessage(String errorMessage) {
-        showSnackBar(errorMessage, false);
+    public void showAlert(int error) {
+        showErrorAlert(error);
+    }
+
+    @Override
+    public void showEditedBar() {
+        showSnackBar();
     }
 
     @Override
@@ -114,7 +120,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
 
         @Override
         protected ArrayList<Usuario> doInBackground(Void... params) {
-            return Endpoints.getUsers();
+            return Endpoints.getUsers(FragmentoUsuarios.this);
         }
 
         @Override
@@ -123,13 +129,11 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
             dismissLoadingDialog();
             if(null!=result){
                 UsersAdaptador usersAdaptador = new UsersAdaptador(result, getActivity());
-                usersAdaptador.setUserActionsClickListener(UsersFragmento.this);
+                usersAdaptador.setUserActionsClickListener(FragmentoUsuarios.this);
                 users_rv.setAdapter(usersAdaptador);
                 users_rv.getAdapter().notifyDataSetChanged();
                 users_refresh_layout.setRefreshing(false);
             }
-            else showErrorAlert();
-
         }
     }
 
@@ -145,7 +149,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         protected Usuario doInBackground(Integer... userId) {
 
             try {
-                return Endpoints.getUser(userId[0]);
+                return Endpoints.getUser(userId[0], FragmentoUsuarios.this);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -160,7 +164,6 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
                 Log.i(getClass().getSimpleName(), String.format("Usuario existe, borramos: %s", result.getName()));
                 new RemoveUsersTask().execute(result.getId());
             }
-            else showErrorAlert();
         }
     }
 
@@ -176,7 +179,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         protected Void doInBackground(Integer... userId) {
 
             try {
-                Endpoints.removeUser(userId[0]);
+                Endpoints.removeUser(userId[0], FragmentoUsuarios.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -206,7 +209,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
 
             try {
                 userToUpdate = user[0];
-                return Endpoints.getUser(user[0].getId());
+                return Endpoints.getUser(user[0].getId(), FragmentoUsuarios.this);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -221,7 +224,6 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
                 Log.i(getClass().getSimpleName(), String.format("Usuario existe, actualizamos: %s", result.getName()));
                 new UpdateUserTask().execute(userToUpdate);
             }
-            else showErrorAlert();
         }
     }
 
@@ -237,7 +239,7 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         protected Usuario doInBackground(Usuario... user) {
 
             try {
-                return Endpoints.updateUser(user[0]);
+                return Endpoints.updateUser(user[0], FragmentoUsuarios.this);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -251,49 +253,66 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
             if(null!=result){
                 Log.i(getClass().getSimpleName(), String.format("Usuario actualizado a: %s", result.getName()));
                 getUsers();
-                if(!sameUsers(result, lastEditedUser)) showSnackBar("Usuario editado", true);
+                if(!sameUsers(result, lastEditedUser)) showSnackBar();
             }
-            else showErrorAlert();
         }
     }
 
 
-    public void showSnackBar(String errorMessage, boolean action){
+    public void showSnackBar(){
         View parentLayout = getActivity().findViewById(R.id.usersFragment);
-        Snackbar snackbar = Snackbar.make(parentLayout, errorMessage, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(parentLayout, "Usuario Edidato", Snackbar.LENGTH_LONG);
         View snackbarView = snackbar.getView();
-        snackbarView.setBackgroundColor(Color.RED);
+        snackbarView.setBackgroundColor(Color.GRAY);
         TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.BLACK);
-        if (action) {
-            snackbarView.setBackgroundColor(Color.GRAY);
-            textView.setTextColor(Color.WHITE);
-            snackbar.setAction(getActivity().getResources().getString(R.string.editar_btn_deshacer), new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new GetUserUpdateTask().execute(lastEditedUser);
-                }
-            });
-        }
+        textView.setTextColor(Color.WHITE);
 
+        snackbar.setAction(getActivity().getResources().getString(R.string.editar_btn_deshacer), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new GetUserUpdateTask().execute(lastEditedUser);
+            }
+        });
 
         snackbar.show();
     }
 
 
-    public void showErrorAlert(){
-        new AlertDialog.Builder(getActivity())
-                .setTitle(getActivity().getResources().getString(R.string.app_name))
-                .setMessage(getActivity().getResources().getString(R.string.mensaje_error_conn))
-                .setPositiveButton(getActivity().getResources().getString(R.string.mensaje_error_refresh), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        getUsers();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+    public void showErrorAlert(final int errorCode){
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(getActivity().getResources().getString(R.string.app_name))
+                        .setMessage(getErrorMessage(errorCode))
+                        .setPositiveButton(getActivity().getResources().getString(R.string.mensaje_error_refresh), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                getUsers();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
+        });
     }
 
+    public String getErrorMessage(int errorCode){
+        String out = "";
+
+        switch (errorCode) {
+            case 500:
+                out = getActivity().getResources().getString(R.string.mensaje_error_internal);
+                break;
+            case 404:
+                out =  getActivity().getResources().getString(R.string.mensaje_error_not_found);
+                break;
+            case -1:
+                out =  getActivity().getResources().getString(R.string.mensaje_error_conn);
+                break;
+        }
+
+        return out;
+    }
 
     public void showLoadingDialog(){
         progress = new ProgressDialog(getActivity());

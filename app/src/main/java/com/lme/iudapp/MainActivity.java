@@ -1,6 +1,7 @@
 package com.lme.iudapp;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
@@ -14,10 +15,11 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
-import com.lme.iudapp.fragmentos.UsersFragmento;
+import com.lme.iudapp.fragmentos.FragmentoUsuarios;
 import com.lme.iudapp.utilidades.Endpoints;
 import com.lme.iudapp.entidades.Usuario;
 
@@ -28,7 +30,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity{
 
     private EditText userBirthdate;
-    private UsersFragmento usersFragmento;
+    private FragmentoUsuarios fragmentoUsuarios;
     private Calendar myCalendar = Calendar.getInstance();
 
     @Override
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity{
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(onClickToCreate);
 
-        usersFragmento = (UsersFragmento) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
+        fragmentoUsuarios = (FragmentoUsuarios) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
     }
 
     View.OnClickListener onClickToCreate = new View.OnClickListener() {
@@ -55,15 +57,12 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if (usersFragmento != null && usersFragmento.isInLayout()) {
-                usersFragmento.showLoadingDialog();
-            }
         }
 
         @Override
         protected Usuario doInBackground(Usuario... user) {
             try {
-                return Endpoints.createUser(user[0]);
+                return Endpoints.createUser(user[0], fragmentoUsuarios);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -73,12 +72,8 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
-            if (usersFragmento != null && usersFragmento.isInLayout()) usersFragmento.dismissLoadingDialog();
-
-            if(null!=result && usersFragmento != null && usersFragmento.isInLayout()){
-                usersFragmento.getUsers();
-                Log.i("Usuario creado", result.getName());
-            }
+            fragmentoUsuarios.getUsers();
+            Log.i("Usuario creado", result.getName());
         }
     }
 
@@ -91,6 +86,7 @@ public class MainActivity extends AppCompatActivity{
 
         final EditText userName = (EditText) editDialoglayout.findViewById(R.id.edt_user_name);
         userName.setHint(getResources().getString(R.string.editar_nombre_usuario));
+        userName.setError(getString(R.string.editar_nombre_usuario_error));
         userName.addTextChangedListener(new TextWatcher()  {
 
             @Override
@@ -113,6 +109,7 @@ public class MainActivity extends AppCompatActivity{
 
         userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
         userBirthdate.setHint(getResources().getString(R.string.editar_birthdate_usuario));
+        userBirthdate.setError(getString(R.string.editar_birthdate_usuario_error));
         userBirthdate.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -123,34 +120,43 @@ public class MainActivity extends AppCompatActivity{
         });
 
         alert.setView(editDialoglayout);
-
-        alert.setPositiveButton(getResources().getString(R.string.boton_aceptar), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-
-                if(userName.getError()==null &&
-                    !userName.getText().toString().equals("") &&
-                    !userBirthdate.getText().toString().equals("") &&
-                    usersFragmento != null && usersFragmento.isInLayout()){
-                        Usuario usuario = new Usuario();
-                        usuario.setName(userName.getText().toString());
-                        usuario.setBirthdate(usersFragmento.dateToIsoConverter(userBirthdate.getText().toString()));
-                        new CreateUsersTask().execute(usuario);
-                }
-                else {
-                    if (usersFragmento != null && usersFragmento.isInLayout())
-                        usersFragmento.showSnackBar(getResources().getString(R.string.crear_usuario_error), false);
-
-                }
-            }
-        });
-
+        alert.setPositiveButton(getResources().getString(R.string.boton_aceptar), null);
         alert.setNegativeButton(getResources().getString(R.string.boton_cancelar), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // what ever you want to do with No option.
             }
         });
 
-        alert.show();
+        AlertDialog dialog = alert.create();
+        dialog.show();
+        Button acceptBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        acceptBtn.setOnClickListener(new CustomListener(dialog, userName));
+    }
+
+    class CustomListener implements View.OnClickListener {
+        private final Dialog dialog;
+        private final EditText userName;
+
+        CustomListener(Dialog dialog, EditText userName) {
+            this.dialog = dialog;
+            this.userName = userName;
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            if(usuarioValido(userName)) {
+                Usuario usuario = new Usuario();
+                usuario.setName(userName.getText().toString());
+                usuario.setBirthdate(fragmentoUsuarios.dateToIsoConverter(userBirthdate.getText().toString()));
+                dialog.dismiss();
+                new CreateUsersTask().execute(usuario);
+            }
+        }
+    }
+
+    public boolean usuarioValido(EditText userName){
+        return userName.getError()==null && userBirthdate.getError()==null;
     }
 
 
@@ -164,8 +170,8 @@ public class MainActivity extends AppCompatActivity{
 
             String myFormat = "MM/dd/yyyy";
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            userBirthdate.setError(null);
             userBirthdate.setText(sdf.format(myCalendar.getTime()));
         }
-
     };
 }
