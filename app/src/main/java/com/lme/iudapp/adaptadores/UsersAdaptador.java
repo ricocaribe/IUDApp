@@ -36,7 +36,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     private Usuario lastEditedUser;
 
     public interface UserActions {
-        void showError(String errorMessage);
+        void showMessage(String errorMessage);
 
         void getUserToUpdate(View v, Usuario user, Usuario lastEditedUser);
 
@@ -44,13 +44,15 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
 
         String dateToIsoConverter(String date);
 
+        boolean sameUsers(Usuario user1, Usuario user2);
+
     }
 
     public void setUserActionsClickListener(UserActions listener) {
         this.userActionsCallback = listener;
     }
 
-    public class PersonViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
+    class PersonViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
         TextView userName;
         TextView userBirthdate;
         int id;
@@ -158,7 +160,6 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         });
 
         userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
-
         userBirthdate.setHint(context.getResources().getString(R.string.editar_birthdate_usuario));
         userBirthdate.setText(ISOToReadableDate(user.getBirthdate()));
         userBirthdate.setOnClickListener(new View.OnClickListener() {
@@ -178,17 +179,14 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         alert.setPositiveButton(context.getResources().getString(R.string.boton_aceptar), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 if(userName.getError()==null && !userName.getText().toString().equals("") && !userBirthdate.getText().toString().equals("")){
-                    if (userActionsCallback != null) {
-                        user.setName(userName.getText().toString());
-                        user.setBirthdate(userActionsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
+                    user.setName(userName.getText().toString());
+                    user.setBirthdate(userActionsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
+                    if (userActionsCallback != null && !userActionsCallback.sameUsers(user,lastEditedUser))
                         userActionsCallback.getUserToUpdate(v, user, lastEditedUser);
-                    }
+
                 }
-                else {
-                    if (userActionsCallback != null) {
-                        userActionsCallback.showError(context.getResources().getString(R.string.editar_usuario_error));
-                    }
-                }
+                else if (userActionsCallback != null)
+                        userActionsCallback.showMessage(context.getResources().getString(R.string.editar_usuario_error));
             }
         });
 
@@ -199,6 +197,20 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         });
 
         alert.show();
+    }
+
+
+    private String ISOToReadableDate(String isoDate){
+        SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+        DateFormat targetFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+
+        try {
+            Date date = originalFormat.parse(isoDate);
+            return targetFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
@@ -219,28 +231,11 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
             myCalendar.set(Calendar.YEAR, year);
             myCalendar.set(Calendar.MONTH, monthOfYear);
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            updateLabel();
+
+            String myFormat = "MM/dd/yyyy";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            userBirthdate.setText(sdf.format(myCalendar.getTime()));
         }
 
     };
-
-    private void updateLabel() {
-        String myFormat = "MM/dd/yyyy"; //In which you need put here
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-
-        userBirthdate.setText(sdf.format(myCalendar.getTime()));
-    }
-
-    private String ISOToReadableDate(String isoDate){
-        SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-        DateFormat targetFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-
-        try {
-            Date date = originalFormat.parse(isoDate);
-            return targetFormat.format(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

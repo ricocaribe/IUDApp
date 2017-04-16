@@ -23,6 +23,8 @@ public class Endpoints implements Serializable{
     private static final String REMOVE_USER = "http://hello-world.innocv.com/api/user/remove";
     private static final String UPDATE_USER = "http://hello-world.innocv.com/api/user/update";
 
+    private static final int CONNECTED_TO = 10000;
+    private static final int READ_TO = 10000;
 
     public static ArrayList<Usuario> getUsers() {
 
@@ -31,8 +33,8 @@ public class Endpoints implements Serializable{
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
-            conn.setConnectTimeout(100000);
-            conn.setReadTimeout(100000);
+            conn.setConnectTimeout(CONNECTED_TO);
+            conn.setReadTimeout(READ_TO);
 
             int HttpResult = conn.getResponseCode();
             if (HttpResult == HttpURLConnection.HTTP_OK) {
@@ -67,8 +69,8 @@ public class Endpoints implements Serializable{
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
-            conn.setConnectTimeout(100000);
-            conn.setReadTimeout(100000);
+            conn.setConnectTimeout(CONNECTED_TO);
+            conn.setReadTimeout(READ_TO);
 
             int HttpResult = conn.getResponseCode();
             if (HttpResult == HttpURLConnection.HTTP_OK) {
@@ -99,8 +101,8 @@ public class Endpoints implements Serializable{
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
-            conn.setConnectTimeout(100000);
-            conn.setReadTimeout(100000);
+            conn.setConnectTimeout(CONNECTED_TO);
+            conn.setReadTimeout(READ_TO);
 
             Gson gson = new Gson();
             OutputStream os = conn.getOutputStream();
@@ -138,8 +140,8 @@ public class Endpoints implements Serializable{
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
-            conn.setConnectTimeout(100000);
-            conn.setReadTimeout(100000);
+            conn.setConnectTimeout(CONNECTED_TO);
+            conn.setReadTimeout(READ_TO);
 
             Gson gson = new Gson();
             OutputStream os = conn.getOutputStream();
@@ -178,8 +180,8 @@ public class Endpoints implements Serializable{
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
-            conn.setConnectTimeout(100000);
-            conn.setReadTimeout(100000);
+            conn.setConnectTimeout(CONNECTED_TO);
+            conn.setReadTimeout(READ_TO);
 
             BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
             StringBuilder sb = new StringBuilder();

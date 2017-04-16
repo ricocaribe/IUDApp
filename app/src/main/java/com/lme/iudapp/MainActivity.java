@@ -28,6 +28,8 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity{
 
     private EditText userBirthdate;
+    private UsersFragmento usersFragmento;
+    private Calendar myCalendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,8 @@ public class MainActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(onClickToCreate);
+
+        usersFragmento = (UsersFragmento) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
     }
 
     View.OnClickListener onClickToCreate = new View.OnClickListener() {
@@ -47,8 +51,6 @@ public class MainActivity extends AppCompatActivity{
     };
 
     private class CreateUsersTask extends AsyncTask<Usuario, Void, Usuario> {
-
-        UsersFragmento usersFragmento = (UsersFragmento) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
 
         @Override
         protected void onPreExecute() {
@@ -71,13 +73,10 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(Usuario result) {
             super.onPostExecute(result);
-            if (usersFragmento != null && usersFragmento.isInLayout()) {
-                usersFragmento.dismissLoadingDialog();
-            }
-            if(null!=result){
-                if (usersFragmento != null && usersFragmento.isInLayout()) {
-                    usersFragmento.getUsers();
-                }
+            if (usersFragmento != null && usersFragmento.isInLayout()) usersFragmento.dismissLoadingDialog();
+
+            if(null!=result && usersFragmento != null && usersFragmento.isInLayout()){
+                usersFragmento.getUsers();
                 Log.i("Usuario creado", result.getName());
             }
         }
@@ -127,7 +126,6 @@ public class MainActivity extends AppCompatActivity{
 
         alert.setPositiveButton(getResources().getString(R.string.boton_aceptar), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                UsersFragmento usersFragmento = (UsersFragmento) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
 
                 if(userName.getError()==null &&
                     !userName.getText().toString().equals("") &&
@@ -139,9 +137,9 @@ public class MainActivity extends AppCompatActivity{
                         new CreateUsersTask().execute(usuario);
                 }
                 else {
-                    if (usersFragmento != null && usersFragmento.isInLayout()) {
-                        usersFragmento.showSnackBarError(getResources().getString(R.string.crear_usuario_error), false);
-                    }
+                    if (usersFragmento != null && usersFragmento.isInLayout())
+                        usersFragmento.showSnackBar(getResources().getString(R.string.crear_usuario_error), false);
+
                 }
             }
         });
@@ -156,24 +154,18 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
-    Calendar myCalendar = Calendar.getInstance();
-
-    DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+    private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             myCalendar.set(Calendar.YEAR, year);
             myCalendar.set(Calendar.MONTH, monthOfYear);
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            updateLabel();
+
+            String myFormat = "MM/dd/yyyy";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            userBirthdate.setText(sdf.format(myCalendar.getTime()));
         }
+
     };
-
-    private void updateLabel() {
-
-        String myFormat = "MM/dd/yyyy"; //In which you need put here
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-
-        userBirthdate.setText(sdf.format(myCalendar.getTime()));
-    }
 }

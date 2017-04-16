@@ -28,11 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
-/**
- * A placeholder fragment containing a simple view.
- */
+
 public class UsersFragmento extends Fragment implements UsersAdaptador.UserActions{
 
     private RecyclerView users_rv;
@@ -63,8 +60,8 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
     }
 
     @Override
-    public void showError(String errorMessage) {
-        showSnackBarError(errorMessage, false);
+    public void showMessage(String errorMessage) {
+        showSnackBar(errorMessage, false);
     }
 
     @Override
@@ -83,6 +80,12 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
         return readableDateToISO(date);
     }
 
+    @Override
+    public boolean sameUsers(Usuario user1, Usuario user2){
+        return user1.getId()==user2.getId() &&
+                user1.getName().equals(user2.getName()) &&
+                user1.getBirthdate().equals(user2.getBirthdate());
+    }
 
     private String readableDateToISO(String isoDate){
         SimpleDateFormat originalFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
@@ -102,7 +105,6 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
     }
 
     private class GetUsersTask extends AsyncTask<Void, Void, ArrayList<Usuario>> {
-        private ProgressDialog progress;
 
         @Override
         protected void onPreExecute() {
@@ -249,19 +251,14 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
             if(null!=result){
                 Log.i(getClass().getSimpleName(), String.format("Usuario actualizado a: %s", result.getName()));
                 getUsers();
-                if(!sameUsers(result, lastEditedUser)) showSnackBarError("Usuario editado", true);
+                if(!sameUsers(result, lastEditedUser)) showSnackBar("Usuario editado", true);
             }
             else showErrorAlert();
         }
     }
 
-    public boolean sameUsers(Usuario user1, Usuario user2){
-        return user1.getId()==user2.getId() &&
-                user1.getName().equals(user2.getName()) &&
-                user1.getBirthdate().equals(user2.getBirthdate());
-    }
 
-    public void showSnackBarError(String errorMessage, boolean action){
+    public void showSnackBar(String errorMessage, boolean action){
         View parentLayout = getActivity().findViewById(R.id.usersFragment);
         Snackbar snackbar = Snackbar.make(parentLayout, errorMessage, Snackbar.LENGTH_LONG);
         View snackbarView = snackbar.getView();
@@ -290,7 +287,6 @@ public class UsersFragmento extends Fragment implements UsersAdaptador.UserActio
                 .setMessage(getActivity().getResources().getString(R.string.mensaje_error_conn))
                 .setPositiveButton(getActivity().getResources().getString(R.string.mensaje_error_refresh), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // continue with delete
                         getUsers();
                     }
                 })
