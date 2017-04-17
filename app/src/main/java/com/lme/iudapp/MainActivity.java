@@ -19,10 +19,12 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
-import com.lme.iudapp.fragmentos.FragmentoUsuarios;
+import com.lme.iudapp.entidades.User;
+import com.lme.iudapp.fragmentos.UsersFragment;
 import com.lme.iudapp.utilidades.Endpoints;
-import com.lme.iudapp.entidades.Usuario;
+import com.lme.iudapp.utilidades.ServerException;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -30,7 +32,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity{
 
     private EditText userBirthdate;
-    private FragmentoUsuarios fragmentoUsuarios;
+    private UsersFragment usersFragment;
     private Calendar myCalendar = Calendar.getInstance();
 
     @Override
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity{
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(onClickToCreate);
 
-        fragmentoUsuarios = (FragmentoUsuarios) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
+        usersFragment = (UsersFragment) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
     }
 
     View.OnClickListener onClickToCreate = new View.OnClickListener() {
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity{
         }
     };
 
-    private class CreateUsersTask extends AsyncTask<Usuario, Void, Usuario> {
+    private class CreateUsersTask extends AsyncTask<User, Void, User> {
 
         @Override
         protected void onPreExecute() {
@@ -60,20 +62,26 @@ public class MainActivity extends AppCompatActivity{
         }
 
         @Override
-        protected Usuario doInBackground(Usuario... user) {
+        protected User doInBackground(User... user) {
             try {
                 return Endpoints.createUser(user[0], MainActivity.this);
-            } catch (Exception e) {
+            } catch (ServerException e) {
                 e.printStackTrace();
+                usersFragment.showErrorAlert(e.getMessage());
+                return null;
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                usersFragment.showErrorAlert(getResources().getString(R.string.mensaje_error_conn));
                 return null;
             }
         }
 
         @Override
-        protected void onPostExecute(Usuario result) {
+        protected void onPostExecute(User result) {
             super.onPostExecute(result);
-            fragmentoUsuarios.getUsers();
-            Log.i("Usuario creado", result.getName());
+            usersFragment.getUsers();
+            Log.i("User creado", result.getName());
         }
     }
 
@@ -126,15 +134,15 @@ public class MainActivity extends AppCompatActivity{
         AlertDialog dialog = alert.create();
         dialog.show();
         Button acceptBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        acceptBtn.setOnClickListener(new BotonAceptarDialogoCrear(dialog, userName));
+        acceptBtn.setOnClickListener(new AcceptDialogBtn(dialog, userName));
 
     }
 
-    private class BotonAceptarDialogoCrear implements View.OnClickListener {
+    private class AcceptDialogBtn implements View.OnClickListener {
         private final Dialog dialog;
         private final EditText userName;
 
-        BotonAceptarDialogoCrear(Dialog dialog, EditText userName) {
+        AcceptDialogBtn(Dialog dialog, EditText userName) {
             this.dialog = dialog;
             this.userName = userName;
         }
@@ -142,12 +150,12 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public void onClick(View v) {
 
-            if(fragmentoUsuarios.isValidUser(userName, userBirthdate)) {
-                Usuario usuario = new Usuario();
-                usuario.setName(userName.getText().toString());
-                usuario.setBirthdate(fragmentoUsuarios.dateToIsoConverter(userBirthdate.getText().toString()));
+            if(usersFragment.isValidUser(userName, userBirthdate)) {
+                User user = new User();
+                user.setName(userName.getText().toString());
+                user.setBirthdate(usersFragment.dateToIsoConverter(userBirthdate.getText().toString()));
                 dialog.dismiss();
-                new CreateUsersTask().execute(usuario);
+                new CreateUsersTask().execute(user);
             }
         }
     }

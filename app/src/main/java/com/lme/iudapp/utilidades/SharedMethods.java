@@ -3,10 +3,10 @@ package com.lme.iudapp.utilidades;
 import android.view.View;
 import android.widget.EditText;
 
-import com.lme.iudapp.entidades.Usuario;
+import com.lme.iudapp.entidades.User;
 
 public interface SharedMethods {
-    void getUserToUpdate(View v, Usuario user, Usuario lastEditedUser);
+    void getUserToUpdate(View v, User user);
 
     void getUserToRemove(View v, int id);
 

@@ -11,20 +11,20 @@
     <string name="boton_aceptar">Aceptar</string>
     <string name="boton_cancelar">Cancelar</string>
 
-    <!--Editar usuario-->
+    <!--Editar user-->
     <string name="editar_nombre_usuario">Nombre</string>
     <string name="editar_birthdate_usuario">Nacimiento</string>
-    <string name="editar_usuario_titulo">Editar usuario</string>
+    <string name="editar_usuario_titulo">Editar user</string>
     <string name="editar_nombre_usuario_error">Nombre vacío</string>
     <string name="editar_birthdate_usuario_error">Fecha vacía</string>
     <string name="editar_btn_deshacer">Deshacer</string>
 
-    <!--Borrar usuario-->
+    <!--Borrar user-->
     <string name="alert_delete_user_title">Borrar usuario</string>
     <string name="alert_delete_user_message">¿Seguro que quieres eliminar este usuario?</string>
     <string name="eliminar_usuario">Eliminar</string>
 
-    <!--Crear usuario-->
+    <!--Crear user-->
     <string name="crear_usuario_titulo">Crear usuario</string>
 
 </resources>

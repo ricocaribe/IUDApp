@@ -2,9 +2,7 @@ package com.lme.iudapp.fragmentos;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,12 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.lme.iudapp.R;
+import com.lme.iudapp.entidades.User;
 import com.lme.iudapp.utilidades.Endpoints;
-import com.lme.iudapp.adaptadores.UsersAdaptador;
-import com.lme.iudapp.entidades.Usuario;
+import com.lme.iudapp.adaptadores.UsersAdapter;
 import com.lme.iudapp.utilidades.ServerException;
 import com.lme.iudapp.utilidades.SharedMethods;
 
@@ -34,7 +31,7 @@ import java.util.Date;
 import java.util.Locale;
 
 
-public class FragmentoUsuarios extends Fragment implements SharedMethods {
+public class UsersFragment extends Fragment implements SharedMethods {
 
     private RecyclerView users_rv;
     private SwipeRefreshLayout users_refresh_layout;
@@ -63,7 +60,7 @@ public class FragmentoUsuarios extends Fragment implements SharedMethods {
     }
 
     @Override
-    public void getUserToUpdate(View v, Usuario user, Usuario lastUser) {
+    public void getUserToUpdate(View v, User user) {
         new GetUserUpdateTask().execute(user);
     }
 
@@ -99,7 +96,7 @@ public class FragmentoUsuarios extends Fragment implements SharedMethods {
         new GetUsersTask().execute();
     }
 
-    private class GetUsersTask extends AsyncTask<Void, Void, ArrayList<Usuario>> {
+    private class GetUsersTask extends AsyncTask<Void, Void, ArrayList<User>> {
 
         @Override
         protected void onPreExecute() {
@@ -108,27 +105,29 @@ public class FragmentoUsuarios extends Fragment implements SharedMethods {
         }
 
         @Override
-        protected ArrayList<Usuario> doInBackground(Void... params) {
+        protected ArrayList<User> doInBackground(Void... params) {
             try {
                 return Endpoints.getUsers(getActivity());
             } catch (ServerException e) {
                 e.printStackTrace();
+                showErrorAlert(e.getMessage());
                 return null;
             }
             catch (IOException e) {
                 e.printStackTrace();
+                showErrorAlert(getActivity().getResources().getString(R.string.mensaje_error_conn));
                 return null;
             }
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Usuario> result) {
+        protected void onPostExecute(ArrayList<User> result) {
             super.onPostExecute(result);
             dismissLoadingDialog();
             if(null!=result){
-                UsersAdaptador usersAdaptador = new UsersAdaptador(result, getActivity());
-                usersAdaptador.setUserActionsClickListener(FragmentoUsuarios.this);
-                users_rv.setAdapter(usersAdaptador);
+                UsersAdapter usersAdapter = new UsersAdapter(result, getActivity());
+                usersAdapter.setUserActionsClickListener(UsersFragment.this);
+                users_rv.setAdapter(usersAdapter);
                 users_rv.getAdapter().notifyDataSetChanged();
                 users_refresh_layout.setRefreshing(false);
             }
@@ -136,7 +135,7 @@ public class FragmentoUsuarios extends Fragment implements SharedMethods {
     }
 
 
-    private class GetUserRemoveTask extends AsyncTask<Integer, Void, Usuario> {
+    private class GetUserRemoveTask extends AsyncTask<Integer, Void, User> {
 
         @Override
         protected void onPreExecute() {
@@ -144,25 +143,27 @@ public class FragmentoUsuarios extends Fragment implements SharedMethods {
         }
 
         @Override
-        protected Usuario doInBackground(Integer... userId) {
+        protected User doInBackground(Integer... userId) {
 
             try {
                 return Endpoints.getUser(userId[0], getActivity());
             } catch (ServerException e) {
                 e.printStackTrace();
+                showErrorAlert(e.getMessage());
                 return null;
             }
             catch (IOException e) {
                 e.printStackTrace();
+                showErrorAlert(getActivity().getResources().getString(R.string.mensaje_error_conn));
                 return null;
             }
         }
 
         @Override
-        protected void onPostExecute(Usuario result) {
+        protected void onPostExecute(User result) {
             super.onPostExecute(result);
             if(null!=result){
-                Log.i(getClass().getSimpleName(), String.format("Usuario existe, borramos: %s", result.getName()));
+                Log.i(getClass().getSimpleName(), String.format("User existe, borramos: %s", result.getName()));
                 new RemoveUsersTask().execute(result.getId());
             }
         }
@@ -183,10 +184,12 @@ public class FragmentoUsuarios extends Fragment implements SharedMethods {
                 Endpoints.removeUser(userId[0], getActivity());
             } catch (ServerException e) {
                 e.printStackTrace();
+                showErrorAlert(e.getMessage());
                 return null;
             }
             catch (IOException e) {
                 e.printStackTrace();
+                showErrorAlert(getActivity().getResources().getString(R.string.mensaje_error_conn));
                 return null;
             }
 
@@ -196,15 +199,15 @@ public class FragmentoUsuarios extends Fragment implements SharedMethods {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            Log.i(getClass().getSimpleName(), "Usuario borrado");
+            Log.i(getClass().getSimpleName(), "User borrado");
             getUsers();
         }
     }
 
 
-    private class GetUserUpdateTask extends AsyncTask<Usuario, Void, Usuario> {
+    private class GetUserUpdateTask extends AsyncTask<User, Void, User> {
 
-        Usuario userToUpdate;
+        User userToUpdate;
 
         @Override
         protected void onPreExecute() {
@@ -212,33 +215,35 @@ public class FragmentoUsuarios extends Fragment implements SharedMethods {
         }
 
         @Override
-        protected Usuario doInBackground(Usuario... user) {
+        protected User doInBackground(User... user) {
 
             try {
                 userToUpdate = user[0];
                 return Endpoints.getUser(user[0].getId(), getActivity());
             } catch (ServerException e) {
                 e.printStackTrace();
+                showErrorAlert(e.getMessage());
                 return null;
             }
             catch (IOException e) {
                 e.printStackTrace();
+                showErrorAlert(getActivity().getResources().getString(R.string.mensaje_error_conn));
                 return null;
             }
         }
 
         @Override
-        protected void onPostExecute(Usuario result) {
+        protected void onPostExecute(User result) {
             super.onPostExecute(result);
             if(null!=result){
-                Log.i(getClass().getSimpleName(), String.format("Usuario existe, actualizamos: %s", result.getName()));
+                Log.i(getClass().getSimpleName(), String.format("User existe, actualizamos: %s", result.getName()));
                 new UpdateUserTask().execute(userToUpdate);
             }
         }
     }
 
 
-    private class UpdateUserTask extends AsyncTask<Usuario, Void, Usuario> {
+    private class UpdateUserTask extends AsyncTask<User, Void, User> {
 
         @Override
         protected void onPreExecute() {
@@ -246,49 +251,50 @@ public class FragmentoUsuarios extends Fragment implements SharedMethods {
         }
 
         @Override
-        protected Usuario doInBackground(Usuario... user) {
+        protected User doInBackground(User... user) {
 
             try {
                 return Endpoints.updateUser(user[0], getActivity());
             } catch (ServerException e) {
                 e.printStackTrace();
+                showErrorAlert(e.getMessage());
                 return null;
             }
             catch (IOException e) {
                 e.printStackTrace();
+                showErrorAlert(getActivity().getResources().getString(R.string.mensaje_error_conn));
                 return null;
             }
-
         }
 
         @Override
-        protected void onPostExecute(Usuario result) {
+        protected void onPostExecute(User result) {
             super.onPostExecute(result);
             if(null!=result){
-                Log.i(getClass().getSimpleName(), String.format("Usuario actualizado a: %s", result.getName()));
+                Log.i(getClass().getSimpleName(), String.format("User actualizado a: %s", result.getName()));
                 getUsers();
             }
         }
     }
 
 
-//    public void showSnackBar(){
-//        View parentLayout = getActivity().findViewById(R.id.usersFragment);
-//        Snackbar snackbar = Snackbar.make(parentLayout, "Usuario Edidato", Snackbar.LENGTH_LONG);
-//        View snackbarView = snackbar.getView();
-//        snackbarView.setBackgroundColor(Color.GRAY);
-//        TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-//        textView.setTextColor(Color.WHITE);
-//
-//        snackbar.setAction(getActivity().getResources().getString(R.string.editar_btn_deshacer), new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                new GetUserUpdateTask().execute(lastEditedUser);
-//            }
-//        });
-//
-//        snackbar.show();
-//    }
+    public void showErrorAlert(final String error){
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(getActivity().getResources().getString(R.string.app_name))
+                        .setMessage(error)
+                        .setPositiveButton(getResources().getString(R.string.mensaje_error_refresh), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                getUsers();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
+        });
+    }
 
     public void showLoadingDialog(){
         progress = new ProgressDialog(getActivity());

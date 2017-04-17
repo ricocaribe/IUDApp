@@ -18,7 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lme.iudapp.R;
-import com.lme.iudapp.entidades.Usuario;
+import com.lme.iudapp.entidades.User;
 import com.lme.iudapp.utilidades.SharedMethods;
 
 import java.text.DateFormat;
@@ -30,19 +30,18 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonViewHolder>{
+public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHolder>{
 
     private EditText userBirthdate;
-    private List<Usuario> users;
+    private List<User> users;
     private Context context;
     private SharedMethods sharedMethodsCallback;
-    private Usuario lastEditedUser;
 
     public void setUserActionsClickListener(SharedMethods listener) {
         this.sharedMethodsCallback = listener;
     }
 
-    public UsersAdaptador(List<Usuario> users, Context c){
+    public UsersAdapter(List<User> users, Context c){
         this.context = c;
         this.users = users;
     }
@@ -115,9 +114,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     }
 
 
-    private void showEditAlert(final Usuario user){
-
-        saveLastEditedUser(user);
+    private void showEditAlert(final User user){
 
         AlertDialog.Builder alert = new AlertDialog.Builder(context);
         alert.setTitle(context.getResources().getString(R.string.editar_usuario_titulo));
@@ -162,12 +159,6 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
             }
         });
 
-        /*alert.setPositiveButton(context.getResources().getString(R.string.boton_aceptar), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-
-            }
-        });*/
-
         alert.setView(editDialoglayout);
         alert.setPositiveButton(context.getResources().getString(R.string.boton_aceptar), null);
         alert.setNegativeButton(context.getResources().getString(R.string.boton_cancelar), null);
@@ -175,18 +166,18 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
         AlertDialog dialog = alert.create();
         dialog.show();
         Button acceptBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        acceptBtn.setOnClickListener(new BotonAceptarDialogoEditar(dialog, user, userName));
+        acceptBtn.setOnClickListener(new AcceptDialogBtn(dialog, user, userName));
     }
 
 
-    private class BotonAceptarDialogoEditar implements View.OnClickListener {
+    private class AcceptDialogBtn implements View.OnClickListener {
         private final Dialog dialog;
-        private final Usuario usuario;
+        private final User user;
         private final EditText userName;
 
-        BotonAceptarDialogoEditar(Dialog dialog, Usuario usuario, EditText userName) {
+        AcceptDialogBtn(Dialog dialog, User user, EditText userName) {
             this.dialog = dialog;
-            this.usuario = usuario;
+            this.user = user;
             this.userName = userName;
         }
 
@@ -195,9 +186,9 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
 
             if (sharedMethodsCallback != null && sharedMethodsCallback.isValidUser(userName, userBirthdate)) {
                 dialog.dismiss();
-                usuario.setName(userName.getText().toString());
-                usuario.setBirthdate(sharedMethodsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
-                sharedMethodsCallback.getUserToUpdate(v, usuario, lastEditedUser);
+                user.setName(userName.getText().toString());
+                user.setBirthdate(sharedMethodsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
+                sharedMethodsCallback.getUserToUpdate(v, user);
             }
         }
     }
@@ -213,14 +204,6 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
             e.printStackTrace();
             return null;
         }
-    }
-
-
-    private void saveLastEditedUser(Usuario userToEdit){
-        lastEditedUser = new Usuario();
-        lastEditedUser.setId(userToEdit.getId());
-        lastEditedUser.setName(userToEdit.getName());
-        lastEditedUser.setBirthdate(userToEdit.getBirthdate());
     }
 
 

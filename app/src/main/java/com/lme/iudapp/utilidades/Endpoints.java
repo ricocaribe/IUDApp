@@ -1,13 +1,11 @@
 package com.lme.iudapp.utilidades;
 
 import android.app.Activity;
-import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.lme.iudapp.entidades.Usuario;
-import com.lme.iudapp.fragmentos.FragmentoUsuarios;
+import com.lme.iudapp.entidades.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,7 +28,7 @@ public class Endpoints{
     private static final int CONNECTED_TO = 10000;
     private static final int READ_TO = 10000;
 
-    public static ArrayList<Usuario> getUsers(Activity activity) throws ServerException, IOException{
+    public static ArrayList<User> getUsers(Activity activity) throws ServerException, IOException{
 
         URL url = new URL(GET_ALL);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -52,7 +50,7 @@ public class Endpoints{
                 br.close();
 
                 conn.disconnect();
-                Type listType = new TypeToken<ArrayList<Usuario>>() {}.getType();
+                Type listType = new TypeToken<ArrayList<User>>() {}.getType();
                 return new GsonBuilder().create().fromJson(sb.toString(), listType);
             case 404:
                 throw ServerException.userNotFoundError(activity);
@@ -64,7 +62,7 @@ public class Endpoints{
     }
 
 
-    public static Usuario getUser(int id, Activity activity) throws ServerException, IOException{
+    public static User getUser(int id, Activity activity) throws ServerException, IOException{
 
         String stringBuilder = GET_USER + "?id=" +
                 URLEncoder.encode(String.valueOf(id), "UTF-8");
@@ -87,6 +85,8 @@ public class Endpoints{
                 }
 
                 conn.disconnect();
+                Gson gson = new Gson();
+                return gson.fromJson(sb.toString(), User.class);
             case 404:
                 throw ServerException.userNotFoundError(activity);
             case 500:
@@ -97,7 +97,7 @@ public class Endpoints{
     }
 
 
-    public static Usuario updateUser(Usuario user, Activity activity) throws ServerException, IOException{
+    public static User updateUser(User user, Activity activity) throws ServerException, IOException{
 
         URL url = new URL(UPDATE_USER);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -126,7 +126,7 @@ public class Endpoints{
                 br.close();
 
                 conn.disconnect();
-                return gson.fromJson(sb.toString(), Usuario.class);
+                return gson.fromJson(sb.toString(), User.class);
             case 404:
                 throw ServerException.userNotFoundError(activity);
             case 500:
@@ -137,7 +137,7 @@ public class Endpoints{
     }
 
 
-    public static Usuario createUser(Usuario user, Activity activity) throws ServerException, IOException{
+    public static User createUser(User user, Activity activity) throws ServerException, IOException{
 
         URL url = new URL(CREATE_USER);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -166,7 +166,7 @@ public class Endpoints{
                 br.close();
 
                 conn.disconnect();
-                return gson.fromJson(sb.toString(), Usuario.class);
+                return gson.fromJson(sb.toString(), User.class);
             case 404:
                 throw ServerException.userNotFoundError(activity);
             case 500:

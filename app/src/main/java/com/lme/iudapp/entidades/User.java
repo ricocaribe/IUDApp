@@ -2,7 +2,7 @@ package com.lme.iudapp.entidades;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Usuario {
+public class User {
 
     @SerializedName("name")
     public String name;
