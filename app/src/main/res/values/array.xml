@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="meses">
+        <item>"All"</item>
+        <item>@string/enero</item>
+        <item>@string/febrero</item>
+        <item>@string/marzo</item>
+        <item>@string/abril</item>
+        <item>@string/mayo</item>
+        <item>@string/junio</item>
+        <item>@string/julio</item>
+        <item>@string/agosto</item>
+        <item>@string/septiembre</item>
+        <item>@string/octubre</item>
+        <item>@string/noviembre</item>
+        <item>@string/diciembre</item>
+    </string-array>
+</resources>

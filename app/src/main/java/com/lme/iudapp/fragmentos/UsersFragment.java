@@ -7,12 +7,14 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 
 import com.lme.iudapp.R;
@@ -47,15 +49,26 @@ public class UsersFragment extends Fragment implements SharedMethods {
         users_rv.setLayoutManager(llm);
         users_refresh_layout = (SwipeRefreshLayout) view.findViewById(R.id.users_refresh_layout);
 
-        new GetUsersTask().execute();
-
         users_refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getUsers();
+                getUsers("All");
             }
         });
 
+        AppCompatSpinner filterSpinner = (AppCompatSpinner) view.findViewById(R.id.filterSpinner);
+        filterSpinner.setSelection(0);
+        filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                getUsers(parent.getItemAtPosition(position).toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         return view;
     }
 
@@ -92,11 +105,11 @@ public class UsersFragment extends Fragment implements SharedMethods {
         }
     }
 
-    public void getUsers(){
-        new GetUsersTask().execute();
+    public void getUsers(String month){
+        new GetUsersTask().execute(month);
     }
 
-    private class GetUsersTask extends AsyncTask<Void, Void, ArrayList<User>> {
+    private class GetUsersTask extends AsyncTask<String, Void, ArrayList<User>> {
 
         @Override
         protected void onPreExecute() {
@@ -105,9 +118,14 @@ public class UsersFragment extends Fragment implements SharedMethods {
         }
 
         @Override
-        protected ArrayList<User> doInBackground(Void... params) {
+        protected ArrayList<User> doInBackground(String... params) {
             try {
-                return Endpoints.getUsers(getActivity());
+                ArrayList<User> userList = Endpoints.getUsers(getActivity());
+                if(!params[0].equals("All")){
+                    return filterUsers(userList, params[0]);
+                }
+                else return userList;
+
             } catch (ServerException e) {
                 e.printStackTrace();
                 showErrorAlert(e.getMessage());
@@ -134,6 +152,15 @@ public class UsersFragment extends Fragment implements SharedMethods {
         }
     }
 
+
+    public ArrayList<User> filterUsers(ArrayList<User> userList, String month){
+        ArrayList<User> filteredUsers = new ArrayList<>();
+        assert userList != null;
+        for (int i = 0; i<userList.size(); i++){
+            if (userList.get(i).getName().toUpperCase().startsWith(month.substring(0,1))) filteredUsers.add(userList.get(i));
+        }
+        return filteredUsers;
+    }
 
     private class GetUserRemoveTask extends AsyncTask<Integer, Void, User> {
 
@@ -200,7 +227,7 @@ public class UsersFragment extends Fragment implements SharedMethods {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             Log.i(getClass().getSimpleName(), "User borrado");
-            getUsers();
+            getUsers("All");
         }
     }
 
@@ -272,7 +299,7 @@ public class UsersFragment extends Fragment implements SharedMethods {
             super.onPostExecute(result);
             if(null!=result){
                 Log.i(getClass().getSimpleName(), String.format("User actualizado a: %s", result.getName()));
-                getUsers();
+                getUsers("All");
             }
         }
     }
@@ -287,7 +314,7 @@ public class UsersFragment extends Fragment implements SharedMethods {
                         .setMessage(error)
                         .setPositiveButton(getResources().getString(R.string.mensaje_error_refresh), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                getUsers();
+                                getUsers("All");
                             }
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)

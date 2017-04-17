@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.lme.iudapp.fragmentos.UsersFragment"
     tools:showIn="@layout/activity_main">
+
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/filterSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/meses"
+        android:prompt="@string/elije_mes"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/users_refresh_layout"
@@ -19,4 +27,4 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-</RelativeLayout>
+</LinearLayout>
