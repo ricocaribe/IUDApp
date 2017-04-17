@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="meses">
+    <string-array name="letras">
         <item>"All"</item>
-        <item>@string/enero</item>
-        <item>@string/febrero</item>
-        <item>@string/marzo</item>
-        <item>@string/abril</item>
-        <item>@string/mayo</item>
-        <item>@string/junio</item>
-        <item>@string/julio</item>
-        <item>@string/agosto</item>
-        <item>@string/septiembre</item>
-        <item>@string/octubre</item>
-        <item>@string/noviembre</item>
-        <item>@string/diciembre</item>
+        <item>A</item>
+        <item>B</item>
+        <item>D</item>
+        <item>E</item>
+        <item>F</item>
+        <item>G</item>
+        <item>H</item>
+        <item>I</item>
+        <item>J</item>
+        <item>K</item>
+        <item>L</item>
+        <item>M</item>
+        <item>N</item>
+        <item>Ñ</item>
+        <item>O</item>
+        <item>P</item>
+        <item>Q</item>
+        <item>R</item>
+        <item>S</item>
+        <item>U</item>
+        <item>V</item>
+        <item>W</item>
+        <item>X</item>
+        <item>Y</item>
+        <item>Z</item>
     </string-array>
 </resources>

@@ -12,8 +12,8 @@
         android:id="@+id/filterSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/meses"
-        android:prompt="@string/elije_mes"/>
+        android:entries="@array/letras"
+        android:prompt="@string/elije_letra"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/users_refresh_layout"

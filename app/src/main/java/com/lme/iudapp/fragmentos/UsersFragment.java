@@ -153,11 +153,11 @@ public class UsersFragment extends Fragment implements SharedMethods {
     }
 
 
-    public ArrayList<User> filterUsers(ArrayList<User> userList, String month){
+    public ArrayList<User> filterUsers(ArrayList<User> userList, String letter){
         ArrayList<User> filteredUsers = new ArrayList<>();
         assert userList != null;
         for (int i = 0; i<userList.size(); i++){
-            if (userList.get(i).getName().toUpperCase().startsWith(month.substring(0,1))) filteredUsers.add(userList.get(i));
+            if (userList.get(i).getName().toUpperCase().startsWith(letter)) filteredUsers.add(userList.get(i));
         }
         return filteredUsers;
     }
