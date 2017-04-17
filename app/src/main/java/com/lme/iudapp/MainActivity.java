@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected Usuario doInBackground(Usuario... user) {
             try {
-                return Endpoints.createUser(user[0], fragmentoUsuarios);
+                return Endpoints.createUser(user[0], MainActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -121,23 +121,20 @@ public class MainActivity extends AppCompatActivity{
 
         alert.setView(editDialoglayout);
         alert.setPositiveButton(getResources().getString(R.string.boton_aceptar), null);
-        alert.setNegativeButton(getResources().getString(R.string.boton_cancelar), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                // what ever you want to do with No option.
-            }
-        });
+        alert.setNegativeButton(getResources().getString(R.string.boton_cancelar), null);
 
         AlertDialog dialog = alert.create();
         dialog.show();
         Button acceptBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        acceptBtn.setOnClickListener(new CustomListener(dialog, userName));
+        acceptBtn.setOnClickListener(new BotonAceptarDialogoCrear(dialog, userName));
+
     }
 
-    class CustomListener implements View.OnClickListener {
+    private class BotonAceptarDialogoCrear implements View.OnClickListener {
         private final Dialog dialog;
         private final EditText userName;
 
-        CustomListener(Dialog dialog, EditText userName) {
+        BotonAceptarDialogoCrear(Dialog dialog, EditText userName) {
             this.dialog = dialog;
             this.userName = userName;
         }
@@ -145,7 +142,7 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public void onClick(View v) {
 
-            if(usuarioValido(userName)) {
+            if(fragmentoUsuarios.isValidUser(userName, userBirthdate)) {
                 Usuario usuario = new Usuario();
                 usuario.setName(userName.getText().toString());
                 usuario.setBirthdate(fragmentoUsuarios.dateToIsoConverter(userBirthdate.getText().toString()));
@@ -153,10 +150,6 @@ public class MainActivity extends AppCompatActivity{
                 new CreateUsersTask().execute(usuario);
             }
         }
-    }
-
-    public boolean usuarioValido(EditText userName){
-        return userName.getError()==null && userBirthdate.getError()==null;
     }
 
 

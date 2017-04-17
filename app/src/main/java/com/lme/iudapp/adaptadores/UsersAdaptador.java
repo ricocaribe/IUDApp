@@ -2,6 +2,7 @@ package com.lme.iudapp.adaptadores;
 
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
@@ -11,13 +12,14 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lme.iudapp.R;
 import com.lme.iudapp.entidades.Usuario;
-import com.lme.iudapp.utilidades.UserActions;
+import com.lme.iudapp.utilidades.SharedMethods;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -33,11 +35,11 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     private EditText userBirthdate;
     private List<Usuario> users;
     private Context context;
-    private UserActions userActionsCallback;
+    private SharedMethods sharedMethodsCallback;
     private Usuario lastEditedUser;
 
-    public void setUserActionsClickListener(UserActions listener) {
-        this.userActionsCallback = listener;
+    public void setUserActionsClickListener(SharedMethods listener) {
+        this.sharedMethodsCallback = listener;
     }
 
     public UsersAdaptador(List<Usuario> users, Context c){
@@ -61,7 +63,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
 
         @Override
         public void onClick(View view) {
-            showEditAlert(users.get(getAdapterPosition()), view);
+            showEditAlert(users.get(getAdapterPosition()));
 
         }
 
@@ -72,8 +74,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
                     .setMessage(context.getResources().getString(R.string.alert_delete_user_message))
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            // continue with delete
-                            if (userActionsCallback != null) userActionsCallback.getUserToRemove(view, id);
+                            if (sharedMethodsCallback != null) sharedMethodsCallback.getUserToRemove(view, id);
 
                         }
                     })
@@ -114,7 +115,7 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
     }
 
 
-    private void showEditAlert(final Usuario user, final View v){
+    private void showEditAlert(final Usuario user){
 
         saveLastEditedUser(user);
 
@@ -161,31 +162,45 @@ public class UsersAdaptador extends RecyclerView.Adapter<UsersAdaptador.PersonVi
             }
         });
 
+        /*alert.setPositiveButton(context.getResources().getString(R.string.boton_aceptar), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+            }
+        });*/
+
         alert.setView(editDialoglayout);
+        alert.setPositiveButton(context.getResources().getString(R.string.boton_aceptar), null);
+        alert.setNegativeButton(context.getResources().getString(R.string.boton_cancelar), null);
 
-        alert.setPositiveButton(context.getResources().getString(R.string.boton_aceptar), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                if(userName.getError()==null && !userName.getText().toString().equals("") && !userBirthdate.getText().toString().equals("")){
-                    user.setName(userName.getText().toString());
-                    user.setBirthdate(userActionsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
-                    if (userActionsCallback != null && !userActionsCallback.sameUsers(user,lastEditedUser))
-                        userActionsCallback.getUserToUpdate(v, user, lastEditedUser);
-
-                }
-                else if (userActionsCallback != null)
-                        userActionsCallback.showEditedBar();
-            }
-        });
-
-        alert.setNegativeButton(context.getResources().getString(R.string.boton_cancelar), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                // what ever you want to do with No option.
-            }
-        });
-
-        alert.show();
+        AlertDialog dialog = alert.create();
+        dialog.show();
+        Button acceptBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        acceptBtn.setOnClickListener(new BotonAceptarDialogoEditar(dialog, user, userName));
     }
 
+
+    private class BotonAceptarDialogoEditar implements View.OnClickListener {
+        private final Dialog dialog;
+        private final Usuario usuario;
+        private final EditText userName;
+
+        BotonAceptarDialogoEditar(Dialog dialog, Usuario usuario, EditText userName) {
+            this.dialog = dialog;
+            this.usuario = usuario;
+            this.userName = userName;
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            if (sharedMethodsCallback != null && sharedMethodsCallback.isValidUser(userName, userBirthdate)) {
+                dialog.dismiss();
+                usuario.setName(userName.getText().toString());
+                usuario.setBirthdate(sharedMethodsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
+                sharedMethodsCallback.getUserToUpdate(v, usuario, lastEditedUser);
+            }
+        }
+    }
 
     private String ISOToReadableDate(String isoDate){
         SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);

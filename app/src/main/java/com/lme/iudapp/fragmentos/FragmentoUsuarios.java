@@ -15,14 +15,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lme.iudapp.R;
 import com.lme.iudapp.utilidades.Endpoints;
 import com.lme.iudapp.adaptadores.UsersAdaptador;
 import com.lme.iudapp.entidades.Usuario;
-import com.lme.iudapp.utilidades.UserActions;
+import com.lme.iudapp.utilidades.ServerException;
+import com.lme.iudapp.utilidades.SharedMethods;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,12 +34,11 @@ import java.util.Date;
 import java.util.Locale;
 
 
-public class FragmentoUsuarios extends Fragment implements UserActions {
+public class FragmentoUsuarios extends Fragment implements SharedMethods {
 
     private RecyclerView users_rv;
     private SwipeRefreshLayout users_refresh_layout;
     private ProgressDialog progress;
-    private Usuario lastEditedUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,18 +63,7 @@ public class FragmentoUsuarios extends Fragment implements UserActions {
     }
 
     @Override
-    public void showAlert(int error) {
-        showErrorAlert(error);
-    }
-
-    @Override
-    public void showEditedBar() {
-        showSnackBar();
-    }
-
-    @Override
     public void getUserToUpdate(View v, Usuario user, Usuario lastUser) {
-        lastEditedUser = lastUser;
         new GetUserUpdateTask().execute(user);
     }
 
@@ -87,10 +78,8 @@ public class FragmentoUsuarios extends Fragment implements UserActions {
     }
 
     @Override
-    public boolean sameUsers(Usuario user1, Usuario user2){
-        return user1.getId()==user2.getId() &&
-                user1.getName().equals(user2.getName()) &&
-                user1.getBirthdate().equals(user2.getBirthdate());
+    public boolean isValidUser(EditText userName, EditText userBirthdate) {
+        return userName.getError()==null && userBirthdate.getError()==null;
     }
 
     private String readableDateToISO(String isoDate){
@@ -120,7 +109,16 @@ public class FragmentoUsuarios extends Fragment implements UserActions {
 
         @Override
         protected ArrayList<Usuario> doInBackground(Void... params) {
-            return Endpoints.getUsers(FragmentoUsuarios.this);
+            try {
+                return Endpoints.getUsers(getActivity());
+            } catch (ServerException e) {
+                e.printStackTrace();
+                return null;
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         @Override
@@ -149,12 +147,15 @@ public class FragmentoUsuarios extends Fragment implements UserActions {
         protected Usuario doInBackground(Integer... userId) {
 
             try {
-                return Endpoints.getUser(userId[0], FragmentoUsuarios.this);
-            } catch (Exception e) {
+                return Endpoints.getUser(userId[0], getActivity());
+            } catch (ServerException e) {
                 e.printStackTrace();
                 return null;
             }
-
+            catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         @Override
@@ -179,10 +180,16 @@ public class FragmentoUsuarios extends Fragment implements UserActions {
         protected Void doInBackground(Integer... userId) {
 
             try {
-                Endpoints.removeUser(userId[0], FragmentoUsuarios.this);
-            } catch (Exception e) {
+                Endpoints.removeUser(userId[0], getActivity());
+            } catch (ServerException e) {
                 e.printStackTrace();
+                return null;
             }
+            catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+
             return null;
         }
 
@@ -209,12 +216,15 @@ public class FragmentoUsuarios extends Fragment implements UserActions {
 
             try {
                 userToUpdate = user[0];
-                return Endpoints.getUser(user[0].getId(), FragmentoUsuarios.this);
-            } catch (Exception e) {
+                return Endpoints.getUser(user[0].getId(), getActivity());
+            } catch (ServerException e) {
                 e.printStackTrace();
                 return null;
             }
-
+            catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         @Override
@@ -239,8 +249,12 @@ public class FragmentoUsuarios extends Fragment implements UserActions {
         protected Usuario doInBackground(Usuario... user) {
 
             try {
-                return Endpoints.updateUser(user[0], FragmentoUsuarios.this);
-            } catch (Exception e) {
+                return Endpoints.updateUser(user[0], getActivity());
+            } catch (ServerException e) {
+                e.printStackTrace();
+                return null;
+            }
+            catch (IOException e) {
                 e.printStackTrace();
                 return null;
             }
@@ -253,66 +267,28 @@ public class FragmentoUsuarios extends Fragment implements UserActions {
             if(null!=result){
                 Log.i(getClass().getSimpleName(), String.format("Usuario actualizado a: %s", result.getName()));
                 getUsers();
-                if(!sameUsers(result, lastEditedUser)) showSnackBar();
             }
         }
     }
 
 
-    public void showSnackBar(){
-        View parentLayout = getActivity().findViewById(R.id.usersFragment);
-        Snackbar snackbar = Snackbar.make(parentLayout, "Usuario Edidato", Snackbar.LENGTH_LONG);
-        View snackbarView = snackbar.getView();
-        snackbarView.setBackgroundColor(Color.GRAY);
-        TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
-
-        snackbar.setAction(getActivity().getResources().getString(R.string.editar_btn_deshacer), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new GetUserUpdateTask().execute(lastEditedUser);
-            }
-        });
-
-        snackbar.show();
-    }
-
-
-    public void showErrorAlert(final int errorCode){
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(getActivity().getResources().getString(R.string.app_name))
-                        .setMessage(getErrorMessage(errorCode))
-                        .setPositiveButton(getActivity().getResources().getString(R.string.mensaje_error_refresh), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                getUsers();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
-        });
-    }
-
-    public String getErrorMessage(int errorCode){
-        String out = "";
-
-        switch (errorCode) {
-            case 500:
-                out = getActivity().getResources().getString(R.string.mensaje_error_internal);
-                break;
-            case 404:
-                out =  getActivity().getResources().getString(R.string.mensaje_error_not_found);
-                break;
-            case -1:
-                out =  getActivity().getResources().getString(R.string.mensaje_error_conn);
-                break;
-        }
-
-        return out;
-    }
+//    public void showSnackBar(){
+//        View parentLayout = getActivity().findViewById(R.id.usersFragment);
+//        Snackbar snackbar = Snackbar.make(parentLayout, "Usuario Edidato", Snackbar.LENGTH_LONG);
+//        View snackbarView = snackbar.getView();
+//        snackbarView.setBackgroundColor(Color.GRAY);
+//        TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+//        textView.setTextColor(Color.WHITE);
+//
+//        snackbar.setAction(getActivity().getResources().getString(R.string.editar_btn_deshacer), new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                new GetUserUpdateTask().execute(lastEditedUser);
+//            }
+//        });
+//
+//        snackbar.show();
+//    }
 
     public void showLoadingDialog(){
         progress = new ProgressDialog(getActivity());
