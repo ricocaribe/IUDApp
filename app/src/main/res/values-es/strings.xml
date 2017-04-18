@@ -2,33 +2,35 @@
     <string name="app_name">IUDapp</string>
 
     <!--Dialogos y alertas-->
-    <string name="cargando">Cargando</string>
-    <string name="espere_cargando">Espere, consultando…</string>
+    <string name="dialogo_carga_titulo">Cargando</string>
+    <string name="dialogo_carga_espere">Espere, consultando…</string>
     <string name="mensaje_error_conn">Algo fue mal…</string>
     <string name="mensaje_error_not_found">Usuario no encontrado…</string>
     <string name="mensaje_error_internal">Error interno…</string>
     <string name="mensaje_error_refresh">Actualizar</string>
-    <string name="boton_aceptar">Aceptar</string>
-    <string name="boton_cancelar">Cancelar</string>
+    <string name="btn_aceptar">Aceptar</string>
+    <string name="btn_cancelar">Cancelar</string>
 
     <!--Editar user-->
-    <string name="editar_nombre_usuario">Nombre</string>
-    <string name="editar_birthdate_usuario">Nacimiento</string>
-    <string name="editar_usuario_titulo">Editar user</string>
+    <string name="edt_nombre_usuario">Nombre</string>
+    <string name="edt_fecha_usuario">Nacimiento</string>
+    <string name="editar_usuario_titulo">Editar usuario</string>
     <string name="editar_nombre_usuario_error">Nombre vacío</string>
     <string name="editar_birthdate_usuario_error">Fecha vacía</string>
     <string name="editado_usuario_mensaje">Usuario editado</string>
     <string name="editar_btn_deshacer">Deshacer</string>
 
+
     <!--Borrar user-->
-    <string name="alert_delete_user_title">Borrar usuario</string>
-    <string name="alert_delete_user_message">¿Seguro que quieres eliminar este usuario?</string>
-    <string name="eliminar_usuario">Eliminar</string>
+    <string name="eliminar_usuario_titulo">Borrar usuario</string>
+    <string name="eliminar_usuario_mensaje">¿Seguro que quieres eliminar este usuario?</string>
+    <string name="btn_eliminar_usuario">Eliminar</string>
+
 
     <!--Crear user-->
     <string name="crear_usuario_titulo">Crear usuario</string>
 
-    <string name="elije_letra">Elije una letra</string>
+    <string name="titulo_spinner_letras">Elije una letra</string>
     <string name="default_spinner_tag">Todas</string>
 
 </resources>

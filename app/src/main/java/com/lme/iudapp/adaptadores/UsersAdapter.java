@@ -69,8 +69,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
         @Override
         public boolean onLongClick(final View view) {
             new AlertDialog.Builder(context)
-                    .setTitle(context.getResources().getString(R.string.alert_delete_user_title))
-                    .setMessage(context.getResources().getString(R.string.alert_delete_user_message))
+                    .setTitle(context.getResources().getString(R.string.eliminar_usuario_titulo))
+                    .setMessage(context.getResources().getString(R.string.eliminar_usuario_mensaje))
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             if (sharedMethodsCallback != null) sharedMethodsCallback.getUserToRemove(view, id);
@@ -147,7 +147,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
         });
 
         userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
-        userBirthdate.setHint(context.getResources().getString(R.string.editar_birthdate_usuario));
+        userBirthdate.setHint(context.getResources().getString(R.string.edt_fecha_usuario));
         userBirthdate.setText(ISOToReadableDate(user.getBirthdate()));
         userBirthdate.setOnClickListener(new View.OnClickListener() {
 
@@ -162,8 +162,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
         });
 
         alert.setView(editDialoglayout);
-        alert.setPositiveButton(context.getResources().getString(R.string.boton_aceptar), null);
-        alert.setNegativeButton(context.getResources().getString(R.string.boton_cancelar), new DialogInterface.OnClickListener() {
+        alert.setPositiveButton(context.getResources().getString(R.string.btn_aceptar), null);
+        alert.setNegativeButton(context.getResources().getString(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 sharedMethodsCallback.removeTempUser();

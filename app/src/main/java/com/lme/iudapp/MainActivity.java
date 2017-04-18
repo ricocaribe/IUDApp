@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity{
         View editDialoglayout = inflater.inflate(R.layout.dialog_layout, null);
 
         final EditText userName = (EditText) editDialoglayout.findViewById(R.id.edt_user_name);
-        userName.setHint(getResources().getString(R.string.editar_nombre_usuario));
+        userName.setHint(getResources().getString(R.string.edt_nombre_usuario));
         userName.setError(getString(R.string.editar_nombre_usuario_error));
         userName.addTextChangedListener(new TextWatcher()  {
 
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity{
         });
 
         userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
-        userBirthdate.setHint(getResources().getString(R.string.editar_birthdate_usuario));
+        userBirthdate.setHint(getResources().getString(R.string.edt_fecha_usuario));
         userBirthdate.setError(getString(R.string.editar_birthdate_usuario_error));
         userBirthdate.setOnClickListener(new View.OnClickListener() {
 
@@ -128,8 +128,8 @@ public class MainActivity extends AppCompatActivity{
         });
 
         alert.setView(editDialoglayout);
-        alert.setPositiveButton(getResources().getString(R.string.boton_aceptar), null);
-        alert.setNegativeButton(getResources().getString(R.string.boton_cancelar), null);
+        alert.setPositiveButton(getResources().getString(R.string.btn_aceptar), null);
+        alert.setNegativeButton(getResources().getString(R.string.btn_cancelar), null);
 
         AlertDialog dialog = alert.create();
         dialog.show();

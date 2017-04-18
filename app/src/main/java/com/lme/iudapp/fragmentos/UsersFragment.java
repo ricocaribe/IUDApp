@@ -364,8 +364,8 @@ public class UsersFragment extends Fragment implements SharedMethods {
 
     public void showLoadingDialog(){
         progress = new ProgressDialog(getActivity());
-        progress.setTitle(getResources().getString(R.string.cargando));
-        progress.setMessage(getResources().getString(R.string.espere_cargando));
+        progress.setTitle(getResources().getString(R.string.dialogo_carga_titulo));
+        progress.setMessage(getResources().getString(R.string.dialogo_carga_espere));
         progress.setCancelable(false);
         progress.show();
     }

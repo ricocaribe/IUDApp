@@ -16,7 +16,7 @@
         android:padding="@dimen/fab_margin"
         android:spinnerMode="dialog"
         android:entries="@array/letras"
-        android:prompt="@string/elije_letra"
+        android:prompt="@string/titulo_spinner_letras"
         android:textColorHint="@color/colorPrimaryDark"/>
 
     <View
