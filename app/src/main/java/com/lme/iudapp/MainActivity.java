@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(User result) {
             super.onPostExecute(result);
-            usersFragment.getUsers("All");
+            usersFragment.getUsers(usersFragment.currentFilterTag);
             Log.i("User creado", result.getName());
         }
     }

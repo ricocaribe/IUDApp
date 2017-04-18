@@ -116,6 +116,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
 
     private void showEditAlert(final User user){
 
+        sharedMethodsCallback.saveTempUser(user);
+
         AlertDialog.Builder alert = new AlertDialog.Builder(context);
         alert.setTitle(context.getResources().getString(R.string.editar_usuario_titulo));
 
@@ -161,7 +163,12 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
 
         alert.setView(editDialoglayout);
         alert.setPositiveButton(context.getResources().getString(R.string.boton_aceptar), null);
-        alert.setNegativeButton(context.getResources().getString(R.string.boton_cancelar), null);
+        alert.setNegativeButton(context.getResources().getString(R.string.boton_cancelar), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                sharedMethodsCallback.removeTempUser();
+            }
+        });
 
         AlertDialog dialog = alert.create();
         dialog.show();

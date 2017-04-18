@@ -13,4 +13,8 @@ public interface SharedMethods {
     String dateToIsoConverter(String date);
 
     boolean isValidUser(EditText userName, EditText userBirthdate);
+
+    void saveTempUser(User user);
+
+    void removeTempUser();
 }

@@ -2,7 +2,9 @@ package com.lme.iudapp.fragmentos;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -38,6 +40,8 @@ public class UsersFragment extends Fragment implements SharedMethods {
     private RecyclerView users_rv;
     private SwipeRefreshLayout users_refresh_layout;
     private ProgressDialog progress;
+    public String currentFilterTag;
+    private User tempUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,16 +56,19 @@ public class UsersFragment extends Fragment implements SharedMethods {
         users_refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getUsers("All");
+                getUsers(currentFilterTag);
             }
         });
 
-        AppCompatSpinner filterSpinner = (AppCompatSpinner) view.findViewById(R.id.filterSpinner);
-        filterSpinner.setSelection(0);
-        filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        currentFilterTag = getActivity().getResources().getString(R.string.default_spinner_tag);
+
+        AppCompatSpinner appCompatSpinner = (AppCompatSpinner) view.findViewById(R.id.filterSpinner);
+        appCompatSpinner.setSelection(0);
+        appCompatSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                getUsers(parent.getItemAtPosition(position).toString());
+                currentFilterTag = parent.getItemAtPosition(position).toString();
+                getUsers(currentFilterTag);
             }
 
             @Override
@@ -92,6 +99,20 @@ public class UsersFragment extends Fragment implements SharedMethods {
         return userName.getError()==null && userBirthdate.getError()==null;
     }
 
+    @Override
+    public void saveTempUser(User user) {
+        tempUser = new User();
+        tempUser.setId(user.getId());
+        tempUser.setName(user.getName());
+        tempUser.setBirthdate(user.getBirthdate());
+    }
+
+    @Override
+    public void removeTempUser() {
+        tempUser = null;
+    }
+
+
     private String readableDateToISO(String isoDate){
         SimpleDateFormat originalFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
         DateFormat targetFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
@@ -121,7 +142,7 @@ public class UsersFragment extends Fragment implements SharedMethods {
         protected ArrayList<User> doInBackground(String... params) {
             try {
                 ArrayList<User> userList = Endpoints.getUsers(getActivity());
-                if(!params[0].equals("All")){
+                if(!params[0].equals(currentFilterTag)){
                     return filterUsers(userList, params[0]);
                 }
                 else return userList;
@@ -148,10 +169,26 @@ public class UsersFragment extends Fragment implements SharedMethods {
                 users_rv.setAdapter(usersAdapter);
                 users_rv.getAdapter().notifyDataSetChanged();
                 users_refresh_layout.setRefreshing(false);
+                if(tempUser!=null) showSnackBar();
             }
         }
     }
 
+    public void showSnackBar(){
+        View parentLayout = getActivity().findViewById(R.id.usersFragment);
+        Snackbar snackbar = Snackbar.make(parentLayout, getResources().getString(R.string.editado_usuario_mensaje), Snackbar.LENGTH_LONG);
+        View snackbarView = snackbar.getView();
+        snackbarView.setBackgroundColor(Color.GRAY);
+        snackbar.setAction(getActivity().getResources().getString(R.string.editar_btn_deshacer), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new GetUserUpdateTask().execute(tempUser);
+                removeTempUser();
+            }
+        });
+
+        snackbar.show();
+    }
 
     public ArrayList<User> filterUsers(ArrayList<User> userList, String letter){
         ArrayList<User> filteredUsers = new ArrayList<>();
@@ -227,7 +264,7 @@ public class UsersFragment extends Fragment implements SharedMethods {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             Log.i(getClass().getSimpleName(), "User borrado");
-            getUsers("All");
+            getUsers(currentFilterTag);
         }
     }
 
@@ -266,6 +303,7 @@ public class UsersFragment extends Fragment implements SharedMethods {
                 Log.i(getClass().getSimpleName(), String.format("User existe, actualizamos: %s", result.getName()));
                 new UpdateUserTask().execute(userToUpdate);
             }
+            else removeTempUser();
         }
     }
 
@@ -299,8 +337,9 @@ public class UsersFragment extends Fragment implements SharedMethods {
             super.onPostExecute(result);
             if(null!=result){
                 Log.i(getClass().getSimpleName(), String.format("User actualizado a: %s", result.getName()));
-                getUsers("All");
+                getUsers(currentFilterTag);
             }
+            else removeTempUser();
         }
     }
 
@@ -314,7 +353,7 @@ public class UsersFragment extends Fragment implements SharedMethods {
                         .setMessage(error)
                         .setPositiveButton(getResources().getString(R.string.mensaje_error_refresh), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                getUsers("All");
+                                getUsers(currentFilterTag);
                             }
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
@@ -335,4 +374,5 @@ public class UsersFragment extends Fragment implements SharedMethods {
     public void dismissLoadingDialog(){
         if(null!=progress) progress.dismiss();
     }
+
 }

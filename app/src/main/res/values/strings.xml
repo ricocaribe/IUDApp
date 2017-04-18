@@ -16,6 +16,7 @@
     <string name="editar_birthdate_usuario">Birthdate</string>
     <string name="editar_usuario_titulo">Edit user</string>
     <string name="editar_nombre_usuario_error">Empty name</string>
+    <string name="editado_usuario_mensaje">User edited</string>
     <string name="editar_birthdate_usuario_error">Empty birthdate</string>
     <string name="editar_btn_deshacer">Undo</string>
 
@@ -28,5 +29,6 @@
     <string name="crear_usuario_titulo">Create user</string>
 
     <string name="elije_letra">Choose a letter</string>
+    <string name="default_spinner_tag">All</string>
 
 </resources>
