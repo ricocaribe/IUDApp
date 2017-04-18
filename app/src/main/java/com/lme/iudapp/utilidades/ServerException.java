@@ -1,11 +1,6 @@
 package com.lme.iudapp.utilidades;
 
-
 import android.app.Activity;
-import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
-
-import com.lme.iudapp.MainActivity;
 import com.lme.iudapp.R;
 
 public class ServerException extends Exception
