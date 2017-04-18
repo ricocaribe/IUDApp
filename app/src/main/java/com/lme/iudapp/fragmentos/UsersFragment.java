@@ -41,7 +41,7 @@ public class UsersFragment extends Fragment implements SharedMethods {
     private SwipeRefreshLayout users_refresh_layout;
     private ProgressDialog progress;
     public String currentFilterTag;
-    private User tempUser;
+    public User tempUser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -142,7 +142,7 @@ public class UsersFragment extends Fragment implements SharedMethods {
         protected ArrayList<User> doInBackground(String... params) {
             try {
                 ArrayList<User> userList = Endpoints.getUsers(getActivity());
-                if(!params[0].equals(currentFilterTag)){
+                if(!params[0].equals(getResources().getString(R.string.default_spinner_tag))){
                     return filterUsers(userList, params[0]);
                 }
                 else return userList;

@@ -192,12 +192,19 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
         public void onClick(View v) {
 
             if (sharedMethodsCallback != null && sharedMethodsCallback.isValidUser(userName, userBirthdate)) {
+                if(!sameUsers(user,userName)){
+                    sharedMethodsCallback.getUserToUpdate(v, user);
+                    user.setName(userName.getText().toString());
+                    user.setBirthdate(sharedMethodsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
+                }
                 dialog.dismiss();
-                user.setName(userName.getText().toString());
-                user.setBirthdate(sharedMethodsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
-                sharedMethodsCallback.getUserToUpdate(v, user);
             }
         }
+    }
+
+    private boolean sameUsers(User user1, EditText userName){
+        return user1.getName().equals(userName.getText().toString()) &&
+                user1.getBirthdate().equals(sharedMethodsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
     }
 
     private String ISOToReadableDate(String isoDate){
