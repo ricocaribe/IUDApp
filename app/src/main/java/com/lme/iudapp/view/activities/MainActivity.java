@@ -1,4 +1,4 @@
-package com.lme.iudapp;
+package com.lme.iudapp.view.activities;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -19,10 +19,10 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
-import com.lme.iudapp.entidades.User;
-import com.lme.iudapp.fragmentos.UsersFragment;
-import com.lme.iudapp.utilidades.Endpoints;
-import com.lme.iudapp.utilidades.ServerException;
+import com.lme.iudapp.R;
+import com.lme.iudapp.model.User;
+import com.lme.iudapp.utils.Endpoints;
+import com.lme.iudapp.utils.ServerException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

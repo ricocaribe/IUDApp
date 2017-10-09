@@ -1,4 +1,4 @@
-package com.lme.iudapp.utilidades;
+package com.lme.iudapp.utils;
 
 import android.app.Activity;
 import com.lme.iudapp.R;

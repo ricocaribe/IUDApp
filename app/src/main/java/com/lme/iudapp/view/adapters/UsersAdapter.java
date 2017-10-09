@@ -1,4 +1,4 @@
-package com.lme.iudapp.adaptadores;
+package com.lme.iudapp.view.adapters;
 
 
 import android.app.DatePickerDialog;
@@ -18,8 +18,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lme.iudapp.R;
-import com.lme.iudapp.entidades.User;
-import com.lme.iudapp.utilidades.SharedMethods;
+import com.lme.iudapp.model.User;
+import com.lme.iudapp.utils.SharedMethods;
 
 import java.text.DateFormat;
 import java.text.ParseException;

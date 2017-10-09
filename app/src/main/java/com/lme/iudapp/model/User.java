@@ -1,4 +1,4 @@
-package com.lme.iudapp.entidades;
+package com.lme.iudapp.model;
 
 import com.google.gson.annotations.SerializedName;
 

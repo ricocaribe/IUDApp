@@ -1,9 +1,9 @@
-package com.lme.iudapp.utilidades;
+package com.lme.iudapp.utils;
 
 import android.view.View;
 import android.widget.EditText;
 
-import com.lme.iudapp.entidades.User;
+import com.lme.iudapp.model.User;
 
 public interface SharedMethods {
     void getUserToUpdate(View v, User user);

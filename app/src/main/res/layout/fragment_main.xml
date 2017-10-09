@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context="com.lme.iudapp.fragmentos.UsersFragment"
+    tools:context="com.lme.iudapp.view.activities.fragments.UsersFragment"
     tools:showIn="@layout/activity_main">
 
     <android.support.v7.widget.AppCompatSpinner

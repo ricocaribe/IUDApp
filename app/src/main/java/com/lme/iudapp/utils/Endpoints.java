@@ -1,11 +1,11 @@
-package com.lme.iudapp.utilidades;
+package com.lme.iudapp.utils;
 
 import android.app.Activity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.lme.iudapp.entidades.User;
+import com.lme.iudapp.model.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
