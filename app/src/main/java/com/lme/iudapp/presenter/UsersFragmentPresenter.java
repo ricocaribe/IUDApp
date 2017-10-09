@@ -48,9 +48,8 @@ public class UsersFragmentPresenter implements UsersInteractor.UsersPresenter {
         });
     }
 
-    @Override
-    public void removeUser(int userId) {
-        usersView.showProgressDialog();
+
+    private void removeUser(int userId) {
 
         IudApiClient.apiService().create(IudApiInterface.class).removeUser(userId).enqueue(new Callback<Void>() {
             @Override
@@ -64,6 +63,74 @@ public class UsersFragmentPresenter implements UsersInteractor.UsersPresenter {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                usersView.dismissProgressDialog();
+                usersView.showAlert();
+                call.cancel();
+                t.printStackTrace();
+            }
+        });
+    }
+
+
+    @Override
+    public void getUserToRemove(final int userId) {
+
+        usersView.showProgressDialog();
+
+        IudApiClient.apiService().create(IudApiInterface.class).getUser(userId).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> usersResponse) {
+
+                removeUser(userId);
+
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                usersView.dismissProgressDialog();
+                usersView.showAlert();
+                call.cancel();
+                t.printStackTrace();
+            }
+        });
+    }
+
+
+    private void updateUser(User user) {
+
+        IudApiClient.apiService().create(IudApiInterface.class).updateUser(user).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> usersResponse) {
+
+                usersView.dismissProgressDialog();
+
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                usersView.dismissProgressDialog();
+                usersView.showAlert();
+                call.cancel();
+                t.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public void getUserToUpdate(final int userId) {
+
+        usersView.showProgressDialog();
+
+        IudApiClient.apiService().create(IudApiInterface.class).getUser(userId).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> usersResponse) {
+
+                updateUser(usersResponse.body());
+
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
                 usersView.dismissProgressDialog();
                 usersView.showAlert();
                 call.cancel();

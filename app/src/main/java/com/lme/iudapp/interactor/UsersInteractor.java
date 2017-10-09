@@ -19,7 +19,7 @@ public interface UsersInteractor {
     interface UsersPresenter {
         void setVista(UsersView usersView);
         void getAllUsers();
-        void removeUser(int id);
-
+        void getUserToRemove(int id);
+        void getUserToUpdate(int id);
     }
 }

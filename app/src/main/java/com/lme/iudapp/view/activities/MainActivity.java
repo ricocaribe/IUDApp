@@ -2,11 +2,13 @@ package com.lme.iudapp.view.activities;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,75 +20,80 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import com.lme.iudapp.R;
+import com.lme.iudapp.interactor.MainInteractor;
 import com.lme.iudapp.model.User;
+import com.lme.iudapp.module.MainModule;
 import com.lme.iudapp.utils.Endpoints;
 import com.lme.iudapp.utils.ServerException;
 import com.lme.iudapp.view.fragments.UsersFragment;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity{
+import javax.inject.Inject;
 
+import dagger.ObjectGraph;
+
+public class MainActivity extends AppCompatActivity implements MainInteractor.MainView{
+
+    @Inject
+    MainInteractor.MainPresenter mainPresenter;
+    private ProgressDialog pdChecking;
     private EditText userBirthdate;
-    private UsersFragment usersFragment;
     private Calendar myCalendar = Calendar.getInstance();
+    private FrameLayout main_layout;
+    private UsersFragment usersFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ObjectGraph objectGraph = ObjectGraph.create(new MainModule());
+        objectGraph.inject(this);
+
+        mainPresenter.setVista(this);
+
+        main_layout = (FrameLayout) findViewById(R.id.mainLayout);
+
+        pdChecking = new ProgressDialog(MainActivity.this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(onClickToCreate);
 
-        usersFragment = (UsersFragment) getSupportFragmentManager().findFragmentById(R.id.usersFragment);
+
+        showUsersFragment();
     }
 
     View.OnClickListener onClickToCreate = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            //showCreateDialog();
+            showCreateDialog();
         }
     };
 
-    /*private class CreateUsersTask extends AsyncTask<User, Void, User> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
+    private void showUsersFragment(){
 
-        @Override
-        protected User doInBackground(User... user) {
-            try {
-                return Endpoints.createUser(user[0], MainActivity.this);
-            } catch (ServerException e) {
-                e.printStackTrace();
-                usersFragment.showErrorAlert(e.getMessage());
-                return null;
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-                usersFragment.showErrorAlert(getResources().getString(R.string.mensaje_error_conn));
-                return null;
-            }
-        }
+        usersFragment = UsersFragment.newInstance();
 
-        @Override
-        protected void onPostExecute(User result) {
-            super.onPostExecute(result);
-            usersFragment.getUsers(usersFragment.currentFilterTag);
-            Log.i("User creado", result.getName());
-        }
-    }*/
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.mainLayout, usersFragment);
+        transaction.commit();
+    }
 
-    /*public void showCreateDialog(){
+
+    public void showCreateDialog(){
         AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
         alert.setTitle(getResources().getString(R.string.crear_usuario_titulo));
 
@@ -137,9 +144,9 @@ public class MainActivity extends AppCompatActivity{
         Button acceptBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         acceptBtn.setOnClickListener(new AcceptDialogBtn(dialog, userName));
 
-    }*/
+    }
 
-    /*private class AcceptDialogBtn implements View.OnClickListener {
+    private class AcceptDialogBtn implements View.OnClickListener {
         private final Dialog dialog;
         private final EditText userName;
 
@@ -151,16 +158,36 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public void onClick(View v) {
 
-            if(usersFragment.isValidUser(userName, userBirthdate)) {
+            if(isValidUser(userName, userBirthdate)) {
                 User user = new User();
                 user.setName(userName.getText().toString());
-                user.setBirthdate(usersFragment.dateToIsoConverter(userBirthdate.getText().toString()));
+                user.setBirthdate(dateToIsoConverter(userBirthdate.getText().toString()));
                 dialog.dismiss();
-                new CreateUsersTask().execute(user);
+                mainPresenter.createUser(user);
             }
         }
-    }*/
+    }
 
+    public boolean isValidUser(EditText userName, EditText userBirthdate) {
+        return userName.getError()==null && userBirthdate.getError()==null;
+    }
+
+    public String dateToIsoConverter(String date) {
+        return readableDateToISO(date);
+    }
+
+    private String readableDateToISO(String isoDate){
+        SimpleDateFormat originalFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        DateFormat targetFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+
+        try {
+            Date date = originalFormat.parse(isoDate);
+            return targetFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
@@ -176,4 +203,39 @@ public class MainActivity extends AppCompatActivity{
             userBirthdate.setText(sdf.format(myCalendar.getTime()));
         }
     };
+
+    @Override
+    public void showAlert() {
+        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setTitle(getResources().getString(R.string.app_name));
+        alertDialog.setMessage(getResources().getString(R.string.error_something_wrong));
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        showUsersFragment();
+                    }
+                });
+        alertDialog.show();
+    }
+
+    @Override
+    public void showProgressDialog() {
+        pdChecking.setCancelable(false);
+        pdChecking.setMessage(getResources().getString(R.string.tv_getting_users));
+        pdChecking.show();
+    }
+
+
+    @Override
+    public void dismissProgressDialog() {
+        if(null!=pdChecking && pdChecking.isShowing()) pdChecking.dismiss();
+    }
+
+    @Override
+    public void refreshUsersFragment() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.detach(usersFragment);
+        transaction.attach(usersFragment);
+        transaction.commit();
+    }
 }

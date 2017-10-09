@@ -4,10 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context="com.lme.iudapp.view.activities.fragments.UsersFragment"
-    tools:showIn="@layout/activity_main">
+    tools:context="com.lme.iudapp.view.fragments.UsersFragment">
 
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/filterSpinner"
