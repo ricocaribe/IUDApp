@@ -31,4 +31,9 @@
     <string name="titulo_spinner_letras">Choose a letter</string>
     <string name="default_spinner_tag">All</string>
 
+    <!--Dialogs-->
+    <string name="tv_getting_users">Loading users…</string>
+
+    <!--Errors-->
+    <string name="error_something_wrong">Something went wrong, try again.</string>
 </resources>

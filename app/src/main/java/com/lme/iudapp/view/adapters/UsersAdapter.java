@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lme.iudapp.R;
+import com.lme.iudapp.interactor.UsersInteractor;
 import com.lme.iudapp.model.User;
 import com.lme.iudapp.utils.SharedMethods;
 
@@ -34,15 +35,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
 
     private EditText userBirthdate;
     private List<User> users;
-    private Context context;
-    private SharedMethods sharedMethodsCallback;
+    private UsersInteractor.UsersView usersView;
 
-    public void setUserActionsClickListener(SharedMethods listener) {
-        this.sharedMethodsCallback = listener;
+    public UsersAdapter(UsersInteractor.UsersView usersView) {
+        this.usersView = usersView;
     }
 
-    public UsersAdapter(List<User> users, Context c){
-        this.context = c;
+    public void setUsers(List<User> users) {
         this.users = users;
     }
 
@@ -62,28 +61,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
 
         @Override
         public void onClick(View view) {
-            showEditAlert(users.get(getAdapterPosition()));
+            //showEditAlert(users.get(getAdapterPosition()));
 
         }
 
         @Override
         public boolean onLongClick(final View view) {
-            new AlertDialog.Builder(context)
-                    .setTitle(context.getResources().getString(R.string.eliminar_usuario_titulo))
-                    .setMessage(context.getResources().getString(R.string.eliminar_usuario_mensaje))
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (sharedMethodsCallback != null) sharedMethodsCallback.getUserToRemove(view, id);
-
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_menu_delete)
-                    .show();
+            usersView.showRemoveUserDialog(users.get(getAdapterPosition()).id);
             return true;
         }
     }
@@ -95,10 +79,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
         return new PersonViewHolder(v);
     }
 
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-    }
 
     @Override
     public void onBindViewHolder(PersonViewHolder holder, int position) {
@@ -114,7 +94,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
     }
 
 
-    private void showEditAlert(final User user){
+    /*private void showEditAlert(final User user){
 
         sharedMethodsCallback.saveTempUser(user);
 
@@ -174,10 +154,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
         dialog.show();
         Button acceptBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         acceptBtn.setOnClickListener(new AcceptDialogBtn(dialog, user, userName));
-    }
+    }*/
 
 
-    private class AcceptDialogBtn implements View.OnClickListener {
+    /*private class AcceptDialogBtn implements View.OnClickListener {
         private final Dialog dialog;
         private final User user;
         private final EditText userName;
@@ -200,12 +180,12 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.PersonViewHo
                 dialog.dismiss();
             }
         }
-    }
+    }*/
 
-    private boolean sameUsers(User user1, EditText userName){
+    /*private boolean sameUsers(User user1, EditText userName){
         return user1.getName().equals(userName.getText().toString()) &&
                 user1.getBirthdate().equals(sharedMethodsCallback.dateToIsoConverter(userBirthdate.getText().toString()));
-    }
+    }*/
 
     private String ISOToReadableDate(String isoDate){
         SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);

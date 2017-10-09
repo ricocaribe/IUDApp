@@ -1,31 +1,30 @@
 package com.lme.iudapp.api;
 
-import com.jmricop.weatherapp.model.Cities;
-import com.jmricop.weatherapp.model.Stations;
+import com.lme.iudapp.model.User;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface IudApiInterface {
 
-    String BASE_URL = "http://api.geonames.org/";
+    String API_BASE_URL = "http://hello-world.innocv.com/";
 
-    @GET("/searchJSON")
-    Call<Cities> searchCity(
-            @Query(value = "q") String query,
-            @Query(value = "maxRows") int maxRows,
-            @Query(value = "startRow") int startRow,
-            @Query(value = "lang") String lang,
-            @Query(value = "isNameRequired") String isNameRequired,
-            @Query(value = "style") String style,
-            @Query(value = "username") String username);
+    @GET("/api/user/getall")
+    Call<List<User>> getAllusers();
 
-    @GET("/weatherJSON")
-    Call<Stations> searchCityWeatherInfo(
-            @Query(value = "north") double north,
-            @Query(value = "south") double south,
-            @Query(value = "east") double east,
-            @Query(value = "west") double west,
-            @Query(value = "username") String username);
+    @GET("/api/user/get/")
+    Call<User> getUser(@Query(value = "id") int id);
+
+    @POST("/api/user/create")
+    Call<User> createUser(@Query(value = "id") User user);
+
+    @POST("/api/user/update")
+    Call<User> updateUser(@Query(value = "id") User user);
+
+    @GET("/api/user/remove/")
+    Call<Void> removeUser(@Query(value = "id") int id);
 }

@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -20,7 +21,9 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 
 import com.lme.iudapp.R;
+import com.lme.iudapp.interactor.UsersInteractor;
 import com.lme.iudapp.model.User;
+import com.lme.iudapp.module.UsersModule;
 import com.lme.iudapp.utils.Endpoints;
 import com.lme.iudapp.view.adapters.UsersAdapter;
 import com.lme.iudapp.utils.ServerException;
@@ -32,37 +35,64 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
 
-public class UsersFragment extends Fragment implements SharedMethods {
+import dagger.ObjectGraph;
 
-    private RecyclerView users_rv;
+
+public class UsersFragment extends Fragment implements UsersInteractor.UsersView {
+
     private SwipeRefreshLayout users_refresh_layout;
-    private ProgressDialog progress;
     public String currentFilterTag;
     public User tempUser;
+
+    @Inject
+    UsersInteractor.UsersPresenter usersPresenter;
+    private ProgressDialog pdChecking;
+    private RecyclerView rvUsers;
+    private UsersAdapter usersAdapter;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ObjectGraph objectGraph = ObjectGraph.create(new UsersModule());
+        objectGraph.inject(this);
+
+        usersPresenter.setVista(this);
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        pdChecking = new ProgressDialog(getActivity());
+
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        users_rv = (RecyclerView) view.findViewById(R.id.birthdates_rv);
-        users_rv.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-        users_rv.setLayoutManager(llm);
+        rvUsers = (RecyclerView) view.findViewById(R.id.birthdates_rv);
+        rvUsers.setHasFixedSize(true);
+        LinearLayoutManager llManagerUsers = new LinearLayoutManager(getActivity());
+        rvUsers.setLayoutManager(llManagerUsers);
+        usersAdapter = new UsersAdapter(this);
+
+        usersPresenter.getAllUsers();
+
+
         users_refresh_layout = (SwipeRefreshLayout) view.findViewById(R.id.users_refresh_layout);
 
         users_refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getUsers(currentFilterTag);
+                //usersPresenter.getAllUsers(currentFilterTag);
             }
         });
 
         currentFilterTag = getActivity().getResources().getString(R.string.default_spinner_tag);
 
-        AppCompatSpinner appCompatSpinner = (AppCompatSpinner) view.findViewById(R.id.filterSpinner);
+        /*AppCompatSpinner appCompatSpinner = (AppCompatSpinner) view.findViewById(R.id.filterSpinner);
         appCompatSpinner.setSelection(0);
         appCompatSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -75,31 +105,84 @@ public class UsersFragment extends Fragment implements SharedMethods {
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
-        });
+        });*/
         return view;
     }
 
     @Override
-    public void getUserToUpdate(View v, User user) {
+    public void showAlert() {
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+        alertDialog.setTitle(getResources().getString(R.string.app_name));
+        alertDialog.setMessage(getResources().getString(R.string.error_something_wrong));
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        usersPresenter.getAllUsers();
+                    }
+                });
+        alertDialog.show();
+    }
+
+    @Override
+    public void showProgressDialog() {
+        pdChecking.setCancelable(false);
+        pdChecking.setMessage(getResources().getString(R.string.tv_getting_users));
+        pdChecking.show();
+    }
+
+
+    @Override
+    public void dismissProgressDialog() {
+        if(null!=pdChecking && pdChecking.isShowing()) pdChecking.dismiss();
+    }
+
+    @Override
+    public void setUsersAdapter(List<User> users) {
+        usersAdapter.setUsers(users);
+        rvUsers.setAdapter(usersAdapter);
+    }
+
+    @Override
+    public void refreshUsers() {
+        usersPresenter.getAllUsers();
+    }
+
+    @Override
+    public void showRemoveUserDialog(final int userId) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(getResources().getString(R.string.eliminar_usuario_titulo))
+                .setMessage(getResources().getString(R.string.eliminar_usuario_mensaje))
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        usersPresenter.removeUser(userId);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .setIcon(android.R.drawable.ic_menu_delete)
+                .show();
+    }
+
+
+    /*public void getUserToUpdate(View v, User user) {
         new GetUserUpdateTask().execute(user);
-    }
+    }*/
 
-    @Override
-    public void getUserToRemove(View v, int id) {
+    /*public void getUserToRemove(View v, int id) {
         new GetUserRemoveTask().execute(id);
-    }
+    }*/
 
-    @Override
     public String dateToIsoConverter(String date) {
         return readableDateToISO(date);
     }
 
-    @Override
     public boolean isValidUser(EditText userName, EditText userBirthdate) {
         return userName.getError()==null && userBirthdate.getError()==null;
     }
 
-    @Override
     public void saveTempUser(User user) {
         tempUser = new User();
         tempUser.setId(user.getId());
@@ -107,7 +190,6 @@ public class UsersFragment extends Fragment implements SharedMethods {
         tempUser.setBirthdate(user.getBirthdate());
     }
 
-    @Override
     public void removeTempUser() {
         tempUser = null;
     }
@@ -126,55 +208,12 @@ public class UsersFragment extends Fragment implements SharedMethods {
         }
     }
 
-    public void getUsers(String month){
+    /*public void getUsers(String month){
         new GetUsersTask().execute(month);
-    }
+    }*/
 
-    private class GetUsersTask extends AsyncTask<String, Void, ArrayList<User>> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showLoadingDialog();
-        }
-
-        @Override
-        protected ArrayList<User> doInBackground(String... params) {
-            try {
-                ArrayList<User> userList = Endpoints.getUsers(getActivity());
-                if(!params[0].equals(getResources().getString(R.string.default_spinner_tag))){
-                    return filterUsers(userList, params[0]);
-                }
-                else return userList;
-
-            } catch (ServerException e) {
-                e.printStackTrace();
-                showErrorAlert(e.getMessage());
-                return null;
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-                showErrorAlert(getActivity().getResources().getString(R.string.mensaje_error_conn));
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<User> result) {
-            super.onPostExecute(result);
-            dismissLoadingDialog();
-            if(null!=result){
-                UsersAdapter usersAdapter = new UsersAdapter(result, getActivity());
-                usersAdapter.setUserActionsClickListener(UsersFragment.this);
-                users_rv.setAdapter(usersAdapter);
-                users_rv.getAdapter().notifyDataSetChanged();
-                users_refresh_layout.setRefreshing(false);
-                if(tempUser!=null) showSnackBar();
-            }
-        }
-    }
-
-    public void showSnackBar(){
+    /*public void showSnackBar(){
         View parentLayout = getActivity().findViewById(R.id.usersFragment);
         Snackbar snackbar = Snackbar.make(parentLayout, getResources().getString(R.string.editado_usuario_mensaje), Snackbar.LENGTH_LONG);
         View snackbarView = snackbar.getView();
@@ -188,18 +227,18 @@ public class UsersFragment extends Fragment implements SharedMethods {
         });
 
         snackbar.show();
-    }
+    }*/
 
-    public ArrayList<User> filterUsers(ArrayList<User> userList, String letter){
+    /*public ArrayList<User> filterUsers(ArrayList<User> userList, String letter){
         ArrayList<User> filteredUsers = new ArrayList<>();
         assert userList != null;
         for (int i = 0; i<userList.size(); i++){
             if (userList.get(i).getName().toUpperCase().startsWith(letter)) filteredUsers.add(userList.get(i));
         }
         return filteredUsers;
-    }
+    }*/
 
-    private class GetUserRemoveTask extends AsyncTask<Integer, Void, User> {
+    /*private class GetUserRemoveTask extends AsyncTask<Integer, Void, User> {
 
         @Override
         protected void onPreExecute() {
@@ -231,10 +270,10 @@ public class UsersFragment extends Fragment implements SharedMethods {
                 new RemoveUsersTask().execute(result.getId());
             }
         }
-    }
+    }*/
 
 
-    private class RemoveUsersTask extends AsyncTask<Integer, Void, Void> {
+    /*private class RemoveUsersTask extends AsyncTask<Integer, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -266,10 +305,10 @@ public class UsersFragment extends Fragment implements SharedMethods {
             Log.i(getClass().getSimpleName(), "User borrado");
             getUsers(currentFilterTag);
         }
-    }
+    }*/
 
 
-    private class GetUserUpdateTask extends AsyncTask<User, Void, User> {
+    /*private class GetUserUpdateTask extends AsyncTask<User, Void, User> {
 
         User userToUpdate;
 
@@ -305,10 +344,10 @@ public class UsersFragment extends Fragment implements SharedMethods {
             }
             else removeTempUser();
         }
-    }
+    }*/
 
 
-    private class UpdateUserTask extends AsyncTask<User, Void, User> {
+    /*private class UpdateUserTask extends AsyncTask<User, Void, User> {
 
         @Override
         protected void onPreExecute() {
@@ -341,38 +380,6 @@ public class UsersFragment extends Fragment implements SharedMethods {
             }
             else removeTempUser();
         }
-    }
-
-
-    public void showErrorAlert(final String error){
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(getActivity().getResources().getString(R.string.app_name))
-                        .setMessage(error)
-                        .setPositiveButton(getResources().getString(R.string.mensaje_error_refresh), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                getUsers(currentFilterTag);
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
-        });
-    }
-
-    public void showLoadingDialog(){
-        progress = new ProgressDialog(getActivity());
-        progress.setTitle(getResources().getString(R.string.dialogo_carga_titulo));
-        progress.setMessage(getResources().getString(R.string.dialogo_carga_espere));
-        progress.setCancelable(false);
-        progress.show();
-    }
-
-
-    public void dismissLoadingDialog(){
-        if(null!=progress) progress.dismiss();
-    }
+    }*/
 
 }

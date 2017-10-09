@@ -51,11 +51,11 @@ public class MainActivity extends AppCompatActivity{
     View.OnClickListener onClickToCreate = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            showCreateDialog();
+            //showCreateDialog();
         }
     };
 
-    private class CreateUsersTask extends AsyncTask<User, Void, User> {
+    /*private class CreateUsersTask extends AsyncTask<User, Void, User> {
 
         @Override
         protected void onPreExecute() {
@@ -84,9 +84,9 @@ public class MainActivity extends AppCompatActivity{
             usersFragment.getUsers(usersFragment.currentFilterTag);
             Log.i("User creado", result.getName());
         }
-    }
+    }*/
 
-    public void showCreateDialog(){
+    /*public void showCreateDialog(){
         AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
         alert.setTitle(getResources().getString(R.string.crear_usuario_titulo));
 
@@ -137,9 +137,9 @@ public class MainActivity extends AppCompatActivity{
         Button acceptBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         acceptBtn.setOnClickListener(new AcceptDialogBtn(dialog, userName));
 
-    }
+    }*/
 
-    private class AcceptDialogBtn implements View.OnClickListener {
+    /*private class AcceptDialogBtn implements View.OnClickListener {
         private final Dialog dialog;
         private final EditText userName;
 
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity{
                 new CreateUsersTask().execute(user);
             }
         }
-    }
+    }*/
 
 
     private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {

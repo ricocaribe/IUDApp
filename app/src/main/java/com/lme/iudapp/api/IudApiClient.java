@@ -7,22 +7,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class IudApiClient {
 
-    public static Retrofit searchCity() {
+    public static Retrofit apiService() {
         return new Retrofit.Builder()
-                .baseUrl(IudApiInterface.BASE_URL)
+                .baseUrl(IudApiInterface.API_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(addLog().build())
                 .build();
     }
 
-
-    public static Retrofit searchCityWeatherInfo() {
-        return new Retrofit.Builder()
-                .baseUrl(IudApiInterface.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(addLog().build())
-                .build();
-    }
 
     private static OkHttpClient.Builder addLog() {
 
