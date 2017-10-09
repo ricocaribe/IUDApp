@@ -23,6 +23,7 @@ import com.lme.iudapp.R;
 import com.lme.iudapp.model.User;
 import com.lme.iudapp.utils.Endpoints;
 import com.lme.iudapp.utils.ServerException;
+import com.lme.iudapp.view.fragments.UsersFragment;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;

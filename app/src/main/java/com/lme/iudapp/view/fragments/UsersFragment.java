@@ -1,4 +1,4 @@
-package com.lme.iudapp.view.activities.fragments;
+package com.lme.iudapp.view.fragments;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
