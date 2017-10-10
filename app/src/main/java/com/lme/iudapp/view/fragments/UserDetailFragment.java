@@ -29,12 +29,7 @@ import com.lme.iudapp.interactor.MainViewInteractor;
 import com.lme.iudapp.interactor.UserDetailInteractor;
 import com.lme.iudapp.model.User;
 import com.lme.iudapp.module.UserDetailModule;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import com.lme.iudapp.utils.DateUtils;
 
 import javax.inject.Inject;
 
@@ -97,11 +92,11 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 
         View view = inflater.inflate(R.layout.fragment_user_detail, container, false);
 
-        TextView superheroDetailName = (TextView) view.findViewById(R.id.tvUserDetailName);
-        superheroDetailName.setText(user.name);
+        TextView tvUserDetailName = view.findViewById(R.id.tvUserDetailName);
+        tvUserDetailName.setText(user.name);
 
-        TextView superheroDetailHeight = (TextView) view.findViewById(R.id.tvUserDetailBirthdate);
-        superheroDetailHeight.setText(user.birthdate);
+        TextView tvUserDetailBirthdate = view.findViewById(R.id.tvUserDetailBirthdate);
+        tvUserDetailBirthdate.setText(user.birthdate);
 
         return view;
     }
@@ -205,7 +200,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 
         userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
         userBirthdate.setHint(getActivity().getResources().getString(R.string.edt_fecha_usuario));
-        userBirthdate.setText(ISOToReadableDate(user.birthdate));
+        userBirthdate.setText(DateUtils.ISOToReadableDate(user.birthdate));
         userBirthdate.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -250,7 +245,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 
             if (isValidUser(userName, userBirthdate)) {
                     user.setName(userName.getText().toString());
-                    user.setBirthdate(dateToIsoConverter(userBirthdate.getText().toString()));
+                    user.setBirthdate(DateUtils.dateToIsoConverter(userBirthdate.getText().toString()));
             }
 
             dialog.dismiss();
@@ -263,23 +258,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
     }
 
 
-    public String dateToIsoConverter(String date) {
-        return readableDateToISO(date);
-    }
 
-
-    private String readableDateToISO(String isoDate){
-        SimpleDateFormat originalFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-        DateFormat targetFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-
-        try {
-            Date date = originalFormat.parse(isoDate);
-            return targetFormat.format(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
@@ -295,19 +274,6 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 //            userBirthdate.setText(sdf.format(myCalendar.getTime()));
         }
     };
-
-    private String ISOToReadableDate(String isoDate){
-        SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-        DateFormat targetFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-
-        try {
-            Date date = originalFormat.parse(isoDate);
-            return targetFormat.format(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
 
     //    public void saveTempUser(User user) {

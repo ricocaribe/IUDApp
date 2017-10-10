@@ -5,6 +5,7 @@ import com.lme.iudapp.model.User;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -20,10 +21,10 @@ public interface IudApiInterface {
     Call<User> getUser(@Query(value = "id") int id);
 
     @POST("/api/user/create")
-    Call<User> createUser(@Query(value = "id") User user);
+    Call<User> createUser(@Body User user);
 
     @POST("/api/user/update")
-    Call<User> updateUser(@Query(value = "id") User user);
+    Call<User> updateUser(@Body User user);
 
     @GET("/api/user/remove/")
     Call<Void> removeUser(@Query(value = "id") int id);

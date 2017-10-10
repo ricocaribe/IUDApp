@@ -29,9 +29,7 @@ import dagger.ObjectGraph;
 
 public class UsersListFragment extends Fragment implements UsersListInteractor.UsersView {
 
-    private SwipeRefreshLayout users_refresh_layout;
     public String currentFilterTag;
-    public User tempUser;
     private MainViewInteractor.MainView mainView;
 
     @Inject
@@ -58,7 +56,7 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        rvUsers = (RecyclerView) view.findViewById(R.id.birthdates_rv);
+        rvUsers = view.findViewById(R.id.birthdates_rv);
         rvUsers.setHasFixedSize(true);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
         rvUsers.setLayoutManager(gridLayoutManager);
@@ -66,9 +64,7 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
 
         currentFilterTag = getActivity().getResources().getString(R.string.default_spinner_tag);
 
-        usersPresenter.getAllUsers(currentFilterTag);
-
-        users_refresh_layout = (SwipeRefreshLayout) view.findViewById(R.id.users_refresh_layout);
+        SwipeRefreshLayout users_refresh_layout = view.findViewById(R.id.users_refresh_layout);
 
         users_refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -77,7 +73,7 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
             }
         });
 
-        AppCompatSpinner appCompatSpinner = (AppCompatSpinner) view.findViewById(R.id.filterSpinner);
+        AppCompatSpinner appCompatSpinner = view.findViewById(R.id.filterSpinner);
         appCompatSpinner.setSelection(0);
         appCompatSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

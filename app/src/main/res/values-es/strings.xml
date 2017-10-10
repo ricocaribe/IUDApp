@@ -38,4 +38,5 @@
 
     <!--Errors-->
     <string name="error_something_wrong">Algo fue mal, inténtalo de nuevo.</string>
+    <string name="error_empty_fields">Nombre o fecha de nacimiento no válida.</string>
 </resources>

@@ -12,10 +12,11 @@ public interface MainViewInteractor {
         void showUserDetailFragment(User user);
         void refreshUserDetailFragment(User user);
         void showUsersListFragment();
+
     }
 
     interface MainPresenter {
         void setVista(MainView mainView);
-
+        void createUser(User user);
     }
 }
