@@ -1,6 +1,6 @@
 package com.lme.iudapp.module;
 
-import com.lme.iudapp.interactor.MainInteractor;
+import com.lme.iudapp.interactor.MainViewInteractor;
 import com.lme.iudapp.presenter.MainViewPresenter;
 import com.lme.iudapp.view.activities.MainActivity;
 
@@ -12,7 +12,7 @@ import dagger.Provides;
 public class MainModule {
 
     @Provides
-    public MainInteractor.MainPresenter provideMainViewPresenter(){
+    public MainViewInteractor.MainPresenter provideMainViewPresenter(){
         return new MainViewPresenter();
     }
 }

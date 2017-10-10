@@ -3,18 +3,19 @@ package com.lme.iudapp.interactor;
 
 import com.lme.iudapp.model.User;
 
-public interface MainInteractor {
+public interface MainViewInteractor {
 
     interface MainView {
         void showAlert();
         void showProgressDialog();
         void dismissProgressDialog();
-        void refreshUsersFragment();
-
+        void showUserDetailFragment(User user);
+        void refreshUserDetailFragment(User user);
+        void showUsersListFragment();
     }
 
     interface MainPresenter {
         void setVista(MainView mainView);
-        void createUser(User user);
+
     }
 }

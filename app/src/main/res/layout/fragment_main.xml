@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.lme.iudapp.view.fragments.UsersFragment">
+    tools:context="com.lme.iudapp.view.fragments.UsersListFragment">
 
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/filterSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/fab_margin"
+        android:padding="@dimen/activity_horizontal_margin"
         android:spinnerMode="dialog"
         android:entries="@array/letras"
         android:prompt="@string/titulo_spinner_letras"

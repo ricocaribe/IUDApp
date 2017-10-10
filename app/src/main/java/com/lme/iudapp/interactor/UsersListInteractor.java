@@ -1,25 +1,26 @@
 package com.lme.iudapp.interactor;
 
+import android.content.Context;
+
 import com.lme.iudapp.model.User;
 
 import java.util.List;
 
-public interface UsersInteractor {
+public interface UsersListInteractor {
 
     interface UsersView {
+        Context getContext();
         void showAlert();
         void showProgressDialog();
         void dismissProgressDialog();
-        void setUsersAdapter(List<User> users);
-        void refreshUsers();
-        void showRemoveUserDialog(int userId);
-
+        void setUsersListAdapter(List<User> users);
+        void goUserDetail(User user);
+        void getUserInfo(int userId);
     }
 
     interface UsersPresenter {
         void setVista(UsersView usersView);
-        void getAllUsers();
-        void getUserToRemove(int id);
-        void getUserToUpdate(int id);
+        void getAllUsers(String filter);
+        void getUser(int id);
     }
 }
