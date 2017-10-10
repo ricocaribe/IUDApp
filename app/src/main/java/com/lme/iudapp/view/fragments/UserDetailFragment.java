@@ -67,8 +67,10 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_user_detail, menu);
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.menu_user_detail, menu);
     }
 
 

@@ -13,6 +13,9 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -58,19 +61,26 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(onClickToCreate);
 
         showUsersListFragment();
     }
 
 
-    View.OnClickListener onClickToCreate = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            showCreateDialog();
-        }
-    };
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_users_list, menu);
+        MenuItem createUserItem = menu.findItem(R.id.action_create);
+
+        createUserItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                showCreateDialog();
+                return false;
+            }
+        });
+
+        return true;
+    }
 
 
     @Override

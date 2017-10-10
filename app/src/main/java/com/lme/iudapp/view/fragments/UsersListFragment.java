@@ -31,6 +31,7 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
 
     public String currentFilterTag;
     private MainViewInteractor.MainView mainView;
+    private SwipeRefreshLayout users_refresh_layout;
 
     @Inject
     UsersListInteractor.UsersPresenter usersPresenter;
@@ -64,7 +65,7 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
 
         currentFilterTag = getActivity().getResources().getString(R.string.default_spinner_tag);
 
-        SwipeRefreshLayout users_refresh_layout = view.findViewById(R.id.users_refresh_layout);
+        users_refresh_layout = view.findViewById(R.id.users_refresh_layout);
 
         users_refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -124,6 +125,7 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
     @Override
     public void dismissProgressDialog() {
         mainView.dismissProgressDialog();
+        if(users_refresh_layout.isRefreshing()) users_refresh_layout.setRefreshing(false);
     }
 
 
