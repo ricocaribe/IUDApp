@@ -9,7 +9,6 @@ public interface UserDetailInteractor {
         void showAlert();
         void showProgressDialog();
         void dismissProgressDialog();
-        void refreshUserView();
         void refreshUsersListView();
     }
 

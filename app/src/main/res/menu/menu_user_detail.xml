@@ -8,12 +8,13 @@
         android:orderInCategory="100"
         android:title="borrar"
         android:icon="@android:drawable/ic_menu_delete"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/action_edit"
+        android:id="@+id/action_save"
         android:orderInCategory="101"
         android:title="editar"
-        android:icon="@android:drawable/ic_menu_edit"
-        app:showAsAction="always"/>
+        android:visible="false"
+        android:icon="@android:drawable/ic_menu_save"
+        app:showAsAction="ifRoom"/>
 </menu>

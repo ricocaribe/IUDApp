@@ -2,11 +2,8 @@ package com.lme.iudapp.view.fragments;
 
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,14 +12,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lme.iudapp.R;
 import com.lme.iudapp.interactor.MainViewInteractor;
@@ -30,6 +25,10 @@ import com.lme.iudapp.interactor.UserDetailInteractor;
 import com.lme.iudapp.model.User;
 import com.lme.iudapp.module.UserDetailModule;
 import com.lme.iudapp.utils.DateUtils;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -44,8 +43,10 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
     private User user;
     public static final String ARG_USER = "user";
     private MainViewInteractor.MainView mainView;
-    private EditText userBirthdate;
-//    private Calendar myCalendar = Calendar.getInstance();
+    private Calendar myCalendar = Calendar.getInstance();
+    private EditText tvUserDetailBirthdate;
+    private MenuItem saveItem;
+    private EditText tvUserDetailName;
 
     public static UserDetailFragment newInstance(User user) {
         UserDetailFragment userDetailFragment = new UserDetailFragment();
@@ -71,6 +72,9 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
         super.onPrepareOptionsMenu(menu);
         menu.clear();
         getActivity().getMenuInflater().inflate(R.menu.menu_user_detail, menu);
+
+        saveItem = menu.findItem(R.id.action_save);
+
     }
 
 
@@ -80,8 +84,8 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
             case R.id.action_delete:
                 showRemoveUserDialog(user.id);
                 break;
-            case R.id.action_edit:
-                userDetailPresenter.updateUser(user);
+            case R.id.action_save:
+                saveUser();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -94,11 +98,38 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 
         View view = inflater.inflate(R.layout.fragment_user_detail, container, false);
 
-        TextView tvUserDetailName = view.findViewById(R.id.tvUserDetailName);
+        tvUserDetailName = view.findViewById(R.id.tvUserDetailName);
         tvUserDetailName.setText(user.name);
+        tvUserDetailName.addTextChangedListener(new TextWatcher()  {
 
-        TextView tvUserDetailBirthdate = view.findViewById(R.id.tvUserDetailBirthdate);
-        tvUserDetailBirthdate.setText(user.birthdate);
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s)  {
+                saveItem.setVisible(true);
+            }
+        });
+
+        tvUserDetailBirthdate = view.findViewById(R.id.tvUserDetailBirthdate);
+        tvUserDetailBirthdate.setText(DateUtils.ISOToReadableDate(user.birthdate));
+        tvUserDetailBirthdate.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(Calendar.YEAR),
+                        myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH));
+                String[] date = tvUserDetailBirthdate.getText().toString().split("/");
+                datePickerDialog.updateDate(Integer.parseInt(date[2]), Integer.parseInt(date[1]), Integer.parseInt(date[0]));
+                datePickerDialog.show();
+            }
+        });
 
         return view;
     }
@@ -140,11 +171,6 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 
 
     @Override
-    public void refreshUserView() {
-        mainView.refreshUserDetailFragment(user);
-    }
-
-    @Override
     public void refreshUsersListView() {
         mainView.showUsersListFragment();
     }
@@ -168,114 +194,30 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
     }
 
 
-    private void showEditAlert(final User user){
-
-//        sharedMethodsCallback.saveTempUser(user);
-
-        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        alert.setTitle(getActivity().getResources().getString(R.string.editar_usuario_titulo));
-
-        LayoutInflater inflater = (LayoutInflater) (getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE));
-        View editDialoglayout = inflater.inflate(R.layout.dialog_layout, null);
-
-        final EditText userName = (EditText) editDialoglayout.findViewById(R.id.edt_user_name);
-        userName.setText(user.name);
-        userName.addTextChangedListener(new TextWatcher()  {
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s)  {
-                if (userName.getText().toString().length() <= 0) {
-                    userName.setError((getActivity().getResources().getString(R.string.editar_nombre_usuario_error)));
-                } else {
-                    userName.setError(null);
-                }
-            }
-        });
-
-        userBirthdate = (EditText) editDialoglayout.findViewById(R.id.edt_user_birthdate);
-        userBirthdate.setHint(getActivity().getResources().getString(R.string.edt_fecha_usuario));
-        userBirthdate.setText(DateUtils.ISOToReadableDate(user.birthdate));
-        userBirthdate.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-//                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-//                        myCalendar.get(Calendar.DAY_OF_MONTH));
-//                String[] date = userBirthdate.getText().toString().split("/");
-//                datePickerDialog.updateDate(Integer.parseInt(date[2]), Integer.parseInt(date[1]), Integer.parseInt(date[0]));
-//                datePickerDialog.show();
-            }
-        });
-
-        alert.setView(editDialoglayout);
-        alert.setPositiveButton(getActivity().getResources().getString(R.string.btn_aceptar), null);
-        alert.setNegativeButton(getActivity().getResources().getString(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //sharedMethodsCallback.removeTempUser();
-            }
-        });
-
-        AlertDialog dialog = alert.create();
-        dialog.show();
-        Button acceptBtn = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        acceptBtn.setOnClickListener(new AcceptDialogBtn(dialog, user, userName));
-    }
-
-
-    private class AcceptDialogBtn implements View.OnClickListener {
-        private final Dialog dialog;
-        private final User user;
-        private final EditText userName;
-
-        AcceptDialogBtn(Dialog dialog, User user, EditText userName) {
-            this.dialog = dialog;
-            this.user = user;
-            this.userName = userName;
-        }
-
-        @Override
-        public void onClick(View v) {
-
-            if (isValidUser(userName, userBirthdate)) {
-                    user.setName(userName.getText().toString());
-                    user.setBirthdate(DateUtils.dateToIsoConverter(userBirthdate.getText().toString()));
-            }
-
-            dialog.dismiss();
-        }
-    }
-
-
-    public boolean isValidUser(EditText userName, EditText userBirthdate) {
-        return userName.getError()==null && userBirthdate.getError()==null;
-    }
-
-
-
-
     private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//            myCalendar.set(Calendar.YEAR, year);
-//            myCalendar.set(Calendar.MONTH, monthOfYear);
-//            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-//
-//            String myFormat = "MM/dd/yyyy";
-//            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-//            userBirthdate.setError(null);
-//            userBirthdate.setText(sdf.format(myCalendar.getTime()));
+            myCalendar.set(Calendar.YEAR, year);
+            myCalendar.set(Calendar.MONTH, monthOfYear);
+            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+            String myFormat = "dd/MM/yyyy";
+            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+            tvUserDetailBirthdate.setText(sdf.format(myCalendar.getTime()));
+            saveItem.setVisible(true);
         }
     };
+
+
+    private void saveUser(){
+        if(!tvUserDetailName.getText().toString().isEmpty() && !tvUserDetailBirthdate.getText().toString().isEmpty()) {
+            user.name = tvUserDetailName.getText().toString();
+            user.birthdate = DateUtils.dateToIsoConverter(tvUserDetailBirthdate.getText().toString());
+            userDetailPresenter.updateUser(user);
+        }
+        else Toast.makeText(getActivity(), getResources().getString(R.string.error_empty_fields), Toast.LENGTH_SHORT).show();
+    }
 
 
     //    public void saveTempUser(User user) {
@@ -288,20 +230,4 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 //    public void removeTempUser() {
 //        tempUser = null;
 //    }
-
-//   private Calendar myCalendar = Calendar.getInstance();
-//
-//    private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-//
-//        @Override
-//        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//            myCalendar.set(Calendar.YEAR, year);
-//            myCalendar.set(Calendar.MONTH, monthOfYear);
-//            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-//
-//            String myFormat = "MM/dd/yyyy";
-//            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-//            userBirthdate.setText(sdf.format(myCalendar.getTime()));
-//        }
-//    };
 }

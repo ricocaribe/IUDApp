@@ -57,7 +57,6 @@ public class UserDetailPresenter implements UserDetailInteractor.UserDetailPrese
 
                 userDetailView.dismissProgressDialog();
 
-                userDetailView.refreshUserView();
             }
 
             @Override

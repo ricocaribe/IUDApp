@@ -172,10 +172,11 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
 
         userBirthdate = editDialoglayout.findViewById(R.id.edt_user_birthdate);
         userBirthdate.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(MainActivity.this, date, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                new DatePickerDialog(MainActivity.this, date, myCalendar.get(Calendar.YEAR),
+                        myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 
@@ -190,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
                     user.setBirthdate(DateUtils.dateToIsoConverter(userBirthdate.getText().toString()));
                     mainPresenter.createUser(user);
                 }
-                else Toast.makeText(getApplicationContext(), "Nombre o fecha de nacimiento no validos", Toast.LENGTH_SHORT).show();
+                else Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_empty_fields), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -204,9 +205,8 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
             myCalendar.set(Calendar.MONTH, monthOfYear);
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-            String myFormat = "MM/dd/yyyy";
+            String myFormat = "dd/MM/yyyy";
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-            userBirthdate.setError(null);
             userBirthdate.setText(sdf.format(myCalendar.getTime()));
         }
     };

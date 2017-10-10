@@ -10,18 +10,13 @@ import android.widget.TextView;
 import com.lme.iudapp.R;
 import com.lme.iudapp.interactor.UsersListInteractor;
 import com.lme.iudapp.model.User;
+import com.lme.iudapp.utils.DateUtils;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 
 public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.PersonViewHolder> {
 
-    //    private EditText userBirthdate;
     private List<User> users;
     private UsersListInteractor.UsersView usersView;
 
@@ -63,7 +58,7 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.Pers
     @Override
     public void onBindViewHolder(PersonViewHolder holder, int position) {
         holder.userName.setText(users.get(position).name);
-        holder.userBirthdate.setText(ISOToReadableDate(users.get(position).birthdate));
+        holder.userBirthdate.setText(DateUtils.ISOToReadableDate(users.get(position).birthdate));
         holder.id = users.get(position).id;
     }
 
@@ -73,17 +68,4 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.Pers
         return users.size();
     }
 
-
-    private String ISOToReadableDate(String isoDate) {
-        SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-        DateFormat targetFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-
-        try {
-            Date date = originalFormat.parse(isoDate);
-            return targetFormat.format(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }
