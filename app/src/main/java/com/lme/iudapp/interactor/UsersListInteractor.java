@@ -10,7 +10,7 @@ public interface UsersListInteractor {
 
     interface UsersView {
         Context getContext();
-        void showAlert();
+        void showAlert(String message);
         void showProgressDialog();
         void dismissProgressDialog();
         void setUsersListAdapter(List<User> users);

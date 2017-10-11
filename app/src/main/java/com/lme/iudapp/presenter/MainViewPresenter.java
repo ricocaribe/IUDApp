@@ -1,6 +1,7 @@
 package com.lme.iudapp.presenter;
 
 
+import com.lme.iudapp.R;
 import com.lme.iudapp.api.IudApiClient;
 import com.lme.iudapp.api.IudApiInterface;
 import com.lme.iudapp.interactor.MainViewInteractor;
@@ -31,17 +32,18 @@ public class MainViewPresenter implements MainViewInteractor.MainPresenter {
 
                 mainView.dismissProgressDialog();
 
-                mainView.showUserDetailFragment(usersResponse.body());
+                if (usersResponse.isSuccessful()) mainView.showUserDetailFragment(usersResponse.body());
+                else mainView.showAlert(usersResponse.message());
+
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 mainView.dismissProgressDialog();
-                mainView.showAlert();
+                mainView.showAlert(mainView.getContext().getResources().getString(R.string.error_something_wrong));
                 call.cancel();
                 t.printStackTrace();
             }
         });
     }
-
 }

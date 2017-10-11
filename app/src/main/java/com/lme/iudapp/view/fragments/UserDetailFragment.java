@@ -45,6 +45,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
     private EditText tvUserDetailBirthdate;
     private EditText tvUserDetailName;
     private FrameLayout mainDetailLayout;
+    private Snackbar snackbarUndo;
 
 
     public static UserDetailFragment newInstance(User user) {
@@ -146,12 +147,13 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
     public void onDetach() {
         super.onDetach();
         mainView = null;
+        if(snackbarUndo!=null) snackbarUndo.dismiss();
     }
 
 
     @Override
-    public void showAlert() {
-        mainView.showAlert();
+    public void showAlert(String message) {
+        mainView.showAlert(message);
     }
 
 
@@ -175,7 +177,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 
     @Override
     public void showSnackbar(){
-        Snackbar snackbar = Snackbar
+        snackbarUndo = Snackbar
                 .make(mainDetailLayout, "User edited", Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
@@ -187,7 +189,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
                     }
                 });
 
-        snackbar.show();
+        snackbarUndo.show();
     }
 
 
@@ -213,7 +215,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
         }
         else {
             tvUserDetailName.setText(user.getName());
-            Toast.makeText(getActivity(), getResources().getString(R.string.error_empty_fields), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getResources().getString(R.string.error_empty_name), Toast.LENGTH_SHORT).show();
         }
     }
 

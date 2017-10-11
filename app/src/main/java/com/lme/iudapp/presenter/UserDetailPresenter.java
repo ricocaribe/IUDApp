@@ -1,6 +1,7 @@
 package com.lme.iudapp.presenter;
 
 
+import com.lme.iudapp.R;
 import com.lme.iudapp.api.IudApiClient;
 import com.lme.iudapp.api.IudApiInterface;
 import com.lme.iudapp.interactor.UserDetailInteractor;
@@ -31,14 +32,16 @@ public class UserDetailPresenter implements UserDetailInteractor.UserDetailPrese
 
                 userDetailView.dismissProgressDialog();
 
-                userDetailView.refreshUsersListView();
+                if (usersResponse.isSuccessful()) userDetailView.refreshUsersListView();
+                else userDetailView.showAlert(usersResponse.message());
+
 
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 userDetailView.dismissProgressDialog();
-                userDetailView.showAlert();
+                userDetailView.showAlert(userDetailView.getContext().getResources().getString(R.string.error_something_wrong));
                 call.cancel();
                 t.printStackTrace();
             }
@@ -57,14 +60,17 @@ public class UserDetailPresenter implements UserDetailInteractor.UserDetailPrese
 
                 userDetailView.dismissProgressDialog();
 
-                if(!undo) userDetailView.showSnackbar();
+                if (usersResponse.isSuccessful()) {
+                    if (!undo) userDetailView.showSnackbar();
+                }
+                else userDetailView.showAlert(usersResponse.message());
 
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 userDetailView.dismissProgressDialog();
-                userDetailView.showAlert();
+                userDetailView.showAlert(userDetailView.getContext().getResources().getString(R.string.error_something_wrong));
                 call.cancel();
                 t.printStackTrace();
             }

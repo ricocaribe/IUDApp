@@ -2,6 +2,8 @@ package com.lme.iudapp.view.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -95,24 +97,16 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
 
 
     @Override
-    public void refreshUserDetailFragment(User user) {
-        userDetailFragment = null;
-        userDetailFragment = UserDetailFragment.newInstance(user);
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.detach(userDetailFragment);
-        transaction.attach(userDetailFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+    public Context getContext() {
+        return getApplicationContext();
     }
 
-
     @Override
-    public void showAlert() {
+    public void showAlert(String message) {
         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
         alertDialog.setCancelable(false);
         alertDialog.setTitle(getResources().getString(R.string.app_name));
-        alertDialog.setMessage(getResources().getString(R.string.error_something_wrong));
+        alertDialog.setMessage(message);
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -129,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
         pdChecking = new AlertDialog.Builder(MainActivity.this).create();
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.progress_bar, null);
+        pdChecking.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         pdChecking.setCancelable(false);
         pdChecking.setView(dialogView);
         pdChecking.show();

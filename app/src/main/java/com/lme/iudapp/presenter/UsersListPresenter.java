@@ -34,15 +34,15 @@ public class UsersListPresenter implements UsersListInteractor.UsersPresenter {
 
                 usersView.dismissProgressDialog();
 
-                if (null != usersResponse.body()) {
-                    usersView.setUsersListAdapter(filterUsers(usersResponse.body(), filter));
-                }
+                if (usersResponse.isSuccessful()) usersView.setUsersListAdapter(filterUsers(usersResponse.body(), filter));
+                else usersView.showAlert(usersResponse.message());
+
             }
 
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
                 usersView.dismissProgressDialog();
-                usersView.showAlert();
+                usersView.showAlert(usersView.getContext().getResources().getString(R.string.error_something_wrong));
                 call.cancel();
                 t.printStackTrace();
             }
@@ -61,14 +61,14 @@ public class UsersListPresenter implements UsersListInteractor.UsersPresenter {
 
                 usersView.dismissProgressDialog();
 
-                usersView.goUserDetail(usersResponse.body());
-
+                if (usersResponse.isSuccessful()) usersView.goUserDetail(usersResponse.body());
+                else usersView.showAlert(usersResponse.message());
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 usersView.dismissProgressDialog();
-                usersView.showAlert();
+                usersView.showAlert(usersView.getContext().getResources().getString(R.string.error_something_wrong));
                 call.cancel();
                 t.printStackTrace();
             }

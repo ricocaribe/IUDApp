@@ -111,8 +111,8 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
 
 
     @Override
-    public void showAlert() {
-        mainView.showAlert();
+    public void showAlert(String message) {
+        mainView.showAlert(message);
     }
 
 
