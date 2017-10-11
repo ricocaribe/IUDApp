@@ -11,9 +11,24 @@
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/action_save"
+        android:id="@+id/action_edit"
         android:orderInCategory="101"
         android:title="editar"
+        android:icon="@android:drawable/ic_menu_edit"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_close"
+        android:orderInCategory="102"
+        android:title="cerrar"
+        android:visible="false"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_save"
+        android:orderInCategory="103"
+        android:title="guardar"
         android:visible="false"
         android:icon="@android:drawable/ic_menu_save"
         app:showAsAction="ifRoom"/>

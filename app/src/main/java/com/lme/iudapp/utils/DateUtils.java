@@ -1,6 +1,5 @@
 package com.lme.iudapp.utils;
 
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,12 +8,7 @@ import java.util.Locale;
 
 public class DateUtils {
 
-    public static String dateToIsoConverter(String date) {
-        return readableDateToISO(date);
-    }
-
-
-    private static String readableDateToISO(String isoDate){
+    public static String readableDateToISO(String isoDate){
         SimpleDateFormat originalFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
         DateFormat targetFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 

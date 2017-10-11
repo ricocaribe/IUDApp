@@ -1,24 +1,17 @@
 package com.lme.iudapp.view.activities;
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -26,13 +19,10 @@ import com.lme.iudapp.R;
 import com.lme.iudapp.interactor.MainViewInteractor;
 import com.lme.iudapp.model.User;
 import com.lme.iudapp.module.MainModule;
+import com.lme.iudapp.utils.DateDialog;
 import com.lme.iudapp.utils.DateUtils;
 import com.lme.iudapp.view.fragments.UserDetailFragment;
 import com.lme.iudapp.view.fragments.UsersListFragment;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -46,8 +36,6 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
 
     private UserDetailFragment userDetailFragment;
     private AlertDialog pdChecking;
-    private Calendar myCalendar = Calendar.getInstance();
-    private EditText userBirthdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View editDialoglayout = inflater.inflate(R.layout.dialog_layout, null);
 
-
         alert.setView(editDialoglayout);
         alert.setPositiveButton(getResources().getString(R.string.btn_aceptar), null);
         alert.setNegativeButton(getResources().getString(R.string.btn_cancelar), null);
@@ -170,13 +157,12 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
 
         final EditText userName = editDialoglayout.findViewById(R.id.edt_user_name);
 
-        userBirthdate = editDialoglayout.findViewById(R.id.edt_user_birthdate);
+        final EditText userBirthdate = editDialoglayout.findViewById(R.id.edt_user_birthdate);
         userBirthdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DatePickerDialog(MainActivity.this, date, myCalendar.get(Calendar.YEAR),
-                        myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                DateDialog dialog=new DateDialog(v);
+                dialog.show(getFragmentManager(), "DatePicker");
             }
         });
 
@@ -188,26 +174,11 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
                     dialog.dismiss();
                     User user = new User();
                     user.setName(userName.getText().toString());
-                    user.setBirthdate(DateUtils.dateToIsoConverter(userBirthdate.getText().toString()));
+                    user.setBirthdate(DateUtils.readableDateToISO(userBirthdate.getText().toString()));
                     mainPresenter.createUser(user);
                 }
                 else Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_empty_fields), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-
-    private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            myCalendar.set(Calendar.YEAR, year);
-            myCalendar.set(Calendar.MONTH, monthOfYear);
-            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-            String myFormat = "dd/MM/yyyy";
-            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-            userBirthdate.setText(sdf.format(myCalendar.getTime()));
-        }
-    };
 }

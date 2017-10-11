@@ -36,5 +36,5 @@
 
     <!--Errors-->
     <string name="error_something_wrong">Something went wrong, try again.</string>
-    <string name="error_empty_fields">Invalid name or birthdate.</string>
+    <string name="error_empty_fields">Name cannot be empty.</string>
 </resources>

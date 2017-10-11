@@ -1,22 +1,19 @@
 package com.lme.iudapp.view.fragments;
 
-
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.lme.iudapp.R;
@@ -24,11 +21,8 @@ import com.lme.iudapp.interactor.MainViewInteractor;
 import com.lme.iudapp.interactor.UserDetailInteractor;
 import com.lme.iudapp.model.User;
 import com.lme.iudapp.module.UserDetailModule;
+import com.lme.iudapp.utils.DateDialog;
 import com.lme.iudapp.utils.DateUtils;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -40,13 +34,18 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
     @Inject
     UserDetailInteractor.UserDetailPresenter userDetailPresenter;
 
-    private User user;
-    public static final String ARG_USER = "user";
     private MainViewInteractor.MainView mainView;
-    private Calendar myCalendar = Calendar.getInstance();
-    private EditText tvUserDetailBirthdate;
+
+    private User user;
+    private User tempUser;
+    private static final String ARG_USER = "user";
     private MenuItem saveItem;
+    private MenuItem closeItem;
+    private MenuItem editItem;
+    private EditText tvUserDetailBirthdate;
     private EditText tvUserDetailName;
+    private FrameLayout mainDetailLayout;
+
 
     public static UserDetailFragment newInstance(User user) {
         UserDetailFragment userDetailFragment = new UserDetailFragment();
@@ -55,6 +54,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
         userDetailFragment.setArguments(args);
         return userDetailFragment;
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +67,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
         userDetailPresenter.setVista(this);
     }
 
+
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
@@ -74,6 +75,8 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
         getActivity().getMenuInflater().inflate(R.menu.menu_user_detail, menu);
 
         saveItem = menu.findItem(R.id.action_save);
+        closeItem = menu.findItem(R.id.action_close);
+        editItem = menu.findItem(R.id.action_edit);
 
     }
 
@@ -82,14 +85,24 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
-                showRemoveUserDialog(user.id);
+                showRemoveUserDialog(user.getId());
+                break;
+            case R.id.action_edit:
+                enableFields();
+                saveTempUser(user);
+                break;
+            case R.id.action_close:
+                disableFields();
+                restoreUserDetails(false);
                 break;
             case R.id.action_save:
+                disableFields();
                 saveUser();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -98,41 +111,25 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 
         View view = inflater.inflate(R.layout.fragment_user_detail, container, false);
 
+        mainDetailLayout = view.findViewById(R.id.mainDetailLayout);
+
         tvUserDetailName = view.findViewById(R.id.tvUserDetailName);
-        tvUserDetailName.setText(user.name);
-        tvUserDetailName.addTextChangedListener(new TextWatcher()  {
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s)  {
-                saveItem.setVisible(true);
-            }
-        });
+        tvUserDetailName.setText(user.getName());
 
         tvUserDetailBirthdate = view.findViewById(R.id.tvUserDetailBirthdate);
-        tvUserDetailBirthdate.setText(DateUtils.ISOToReadableDate(user.birthdate));
+        tvUserDetailBirthdate.setText(DateUtils.ISOToReadableDate(user.getBirthdate()));
         tvUserDetailBirthdate.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), date, myCalendar.get(Calendar.YEAR),
-                        myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH));
-                String[] date = tvUserDetailBirthdate.getText().toString().split("/");
-                datePickerDialog.updateDate(Integer.parseInt(date[2]), Integer.parseInt(date[1]), Integer.parseInt(date[0]));
-                datePickerDialog.show();
+                DateDialog dialog=new DateDialog(v);
+                dialog.show(getActivity().getFragmentManager(), "DatePicker");
             }
         });
 
         return view;
     }
+
 
     @Override
     public void onAttach(Context context) {
@@ -175,6 +172,25 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
         mainView.showUsersListFragment();
     }
 
+
+    @Override
+    public void showSnackbar(){
+        Snackbar snackbar = Snackbar
+                .make(mainDetailLayout, "User edited", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        userDetailPresenter.updateUser(tempUser, true);
+                        restoreUserDetails(true);
+                        Snackbar snackbar1 = Snackbar.make(mainDetailLayout, "User restored!", Snackbar.LENGTH_SHORT);
+                        snackbar1.show();
+                    }
+                });
+
+        snackbar.show();
+    }
+
+
     public void showRemoveUserDialog(final int userId) {
     new AlertDialog.Builder(getActivity())
             .setTitle(getResources().getString(R.string.eliminar_usuario_titulo))
@@ -184,50 +200,65 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
                     userDetailPresenter.removeUser(userId);
                 }
             })
-            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // do nothing
-                }
-            })
             .setIcon(android.R.drawable.ic_menu_delete)
             .show();
     }
 
 
-    private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            myCalendar.set(Calendar.YEAR, year);
-            myCalendar.set(Calendar.MONTH, monthOfYear);
-            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-            String myFormat = "dd/MM/yyyy";
-            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-            tvUserDetailBirthdate.setText(sdf.format(myCalendar.getTime()));
-            saveItem.setVisible(true);
-        }
-    };
-
-
     private void saveUser(){
         if(!tvUserDetailName.getText().toString().isEmpty() && !tvUserDetailBirthdate.getText().toString().isEmpty()) {
-            user.name = tvUserDetailName.getText().toString();
-            user.birthdate = DateUtils.dateToIsoConverter(tvUserDetailBirthdate.getText().toString());
-            userDetailPresenter.updateUser(user);
+            user.setName(tvUserDetailName.getText().toString());
+            user.setBirthdate(DateUtils.readableDateToISO(tvUserDetailBirthdate.getText().toString()));
+            userDetailPresenter.updateUser(user, false);
         }
-        else Toast.makeText(getActivity(), getResources().getString(R.string.error_empty_fields), Toast.LENGTH_SHORT).show();
+        else {
+            tvUserDetailName.setText(user.getName());
+            Toast.makeText(getActivity(), getResources().getString(R.string.error_empty_fields), Toast.LENGTH_SHORT).show();
+        }
     }
 
 
-    //    public void saveTempUser(User user) {
-//        tempUser = new User();
-//        tempUser.setId(user.getId());
-//        tempUser.setName(user.getName());
-//        tempUser.setBirthdate(user.getBirthdate());
-//    }
-//
-//    public void removeTempUser() {
-//        tempUser = null;
-//    }
+    private void enableFields(){
+        saveItem.setVisible(true);
+        editItem.setVisible(false);
+        closeItem.setVisible(true);
+        tvUserDetailName.setEnabled(true);
+        tvUserDetailName.requestFocus();
+        tvUserDetailBirthdate.setEnabled(true);
+    }
+
+
+    private void disableFields(){
+        closeItem.setVisible(false);
+        saveItem.setVisible(false);
+        editItem.setVisible(true);
+        tvUserDetailName.setEnabled(false);
+        tvUserDetailName.clearFocus();
+        tvUserDetailBirthdate.setEnabled(false);
+    }
+
+
+    public void saveTempUser(User user) {
+        tempUser = null;
+        tempUser = new User();
+        tempUser.setId(user.getId());
+        tempUser.setName(user.getName());
+        tempUser.setBirthdate(user.getBirthdate());
+    }
+
+
+    public void restoreUserDetails(boolean undo) {
+        if(undo){
+            String name = tempUser.getName();
+            user.setName(name);
+            user.setBirthdate(tempUser.getBirthdate());
+            tvUserDetailName.setText(name);
+            tvUserDetailBirthdate.setText(DateUtils.ISOToReadableDate(tempUser.getBirthdate()));
+        }
+        else {
+            tvUserDetailName.setText(user.getName());
+            tvUserDetailBirthdate.setText(DateUtils.ISOToReadableDate(user.getBirthdate()));
+        }
+
+    }
 }

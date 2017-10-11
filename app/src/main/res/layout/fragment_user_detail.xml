@@ -2,6 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainDetailLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -26,19 +27,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display3"
+            android:maxLength="15"
             android:inputType="text"
-            android:padding="@dimen/activity_horizontal_margin"/>
+            android:enabled="false"
+            android:textColor="@drawable/edt_user_detail"
+            android:focusableInTouchMode="true"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display3" />
 
         <EditText
             android:id="@+id/tvUserDetailBirthdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+            android:maxLength="10"
             android:inputType="date"
+            android:enabled="false"
             android:focusable="false"
-            android:maxLines="2"/>
+            android:textColor="@drawable/edt_user_detail"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+            android:padding="@dimen/activity_horizontal_margin"/>
 
     </LinearLayout>
 

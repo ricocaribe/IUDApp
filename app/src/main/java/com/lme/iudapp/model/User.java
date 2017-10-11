@@ -13,6 +13,18 @@ public class User implements Serializable{
     @SerializedName("id")
     public int id;
 
+    public String getName() {
+        return name;
+    }
+
+    public String getBirthdate() {
+        return birthdate;
+    }
+
+    public int getId() {
+        return id;
+    }
+
     public void setName(String name) {
         this.name = name;
     }

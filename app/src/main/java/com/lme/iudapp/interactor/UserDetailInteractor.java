@@ -10,11 +10,12 @@ public interface UserDetailInteractor {
         void showProgressDialog();
         void dismissProgressDialog();
         void refreshUsersListView();
+        void showSnackbar();
     }
 
     interface UserDetailPresenter {
         void setVista(UserDetailView userDetailView);
         void removeUser(int id);
-        void updateUser(User user);
+        void updateUser(User user, boolean undo);
     }
 }

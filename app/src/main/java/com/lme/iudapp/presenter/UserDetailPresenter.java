@@ -47,7 +47,7 @@ public class UserDetailPresenter implements UserDetailInteractor.UserDetailPrese
 
 
     @Override
-    public void updateUser(User user) {
+    public void updateUser(User user, final boolean undo) {
 
         userDetailView.showProgressDialog();
 
@@ -56,6 +56,8 @@ public class UserDetailPresenter implements UserDetailInteractor.UserDetailPrese
             public void onResponse(Call<User> call, Response<User> usersResponse) {
 
                 userDetailView.dismissProgressDialog();
+
+                if(!undo) userDetailView.showSnackbar();
 
             }
 
