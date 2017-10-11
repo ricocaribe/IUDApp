@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -100,6 +101,9 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
                 disableFields();
                 saveUser();
                 break;
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -129,6 +133,14 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
         });
 
         return view;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle("Detalle");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 
@@ -213,7 +225,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
         }
         else {
             tvUserDetailName.setText(user.getName());
-            Toast.makeText(getActivity(), getResources().getString(R.string.txt_error_empty_name), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getResources().getString(R.string.txt_error_empty_username), Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -63,7 +64,7 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
         rvUsers.setLayoutManager(gridLayoutManager);
         usersListAdapter = new UsersListAdapter(this);
 
-        currentFilterTag = getActivity().getResources().getString(R.string.default_spinner_tag);
+        currentFilterTag = getActivity().getResources().getString(R.string.txt_default_spinner_tag);
 
         users_refresh_layout = view.findViewById(R.id.users_refresh_layout);
 
@@ -89,6 +90,15 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
             }
         });
         return view;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle("Cumpleaños");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
     }
 
 

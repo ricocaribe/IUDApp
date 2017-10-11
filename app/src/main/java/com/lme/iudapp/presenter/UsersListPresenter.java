@@ -77,7 +77,7 @@ public class UsersListPresenter implements UsersListInteractor.UsersPresenter {
 
 
     private List<User> filterUsers(List<User> userList, String filter){
-        if(!filter.equals(usersView.getContext().getResources().getString(R.string.default_spinner_tag))){
+        if(!filter.equals(usersView.getContext().getResources().getString(R.string.txt_default_spinner_tag))){
             List<User> filteredUsers = new ArrayList<>();
             assert userList != null;
             for (int i = 0; i<userList.size(); i++){
