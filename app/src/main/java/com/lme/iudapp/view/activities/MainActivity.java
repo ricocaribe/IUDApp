@@ -74,22 +74,16 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
 
     @Override
     public void showUsersListFragment(){
-
-        UsersListFragment usersListFragment = UsersListFragment.newInstance();
-
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.mainLayout, usersListFragment);
+        transaction.replace(R.id.mainLayout, UsersListFragment.newInstance());
         transaction.commit();
-
     }
 
 
     @Override
     public void showUserDetailFragment(User user) {
-        UserDetailFragment userDetailFragment = UserDetailFragment.newInstance(user);
-
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.mainLayout, userDetailFragment);
+        transaction.replace(R.id.mainLayout, UserDetailFragment.newInstance(user));
         transaction.addToBackStack(null);
         transaction.commit();
     }

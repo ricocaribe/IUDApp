@@ -30,7 +30,7 @@
             android:maxLength="15"
             android:inputType="text"
             android:enabled="false"
-            android:textColor="@drawable/edt_user_detail"
+            android:textColor="@drawable/edt_user_detail_selector"
             android:focusableInTouchMode="true"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Display3" />
 
@@ -43,7 +43,7 @@
             android:inputType="date"
             android:enabled="false"
             android:focusable="false"
-            android:textColor="@drawable/edt_user_detail"
+            android:textColor="@drawable/edt_user_detail_selector"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
             android:padding="@dimen/activity_horizontal_margin"/>
 
