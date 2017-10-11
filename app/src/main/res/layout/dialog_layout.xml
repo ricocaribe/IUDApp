@@ -9,16 +9,16 @@
     tools:context="com.lme.iudapp.view.activities.MainActivity">
 
     <EditText
-        android:id="@+id/edt_user_name"
+        android:id="@+id/edtUserName"
         android:inputType="text"
-        android:hint="@string/edt_nombre_usuario"
+        android:hint="@string/txt_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <EditText
-        android:id="@+id/edt_user_birthdate"
+        android:id="@+id/edtUserBirthdate"
         android:inputType="date"
-        android:hint="@string/edt_fecha_usuario"
+        android:hint="@string/txt_userbirthdate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="false"/>

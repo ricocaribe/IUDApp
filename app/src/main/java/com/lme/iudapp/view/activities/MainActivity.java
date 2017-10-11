@@ -138,21 +138,20 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
 
     public void showCreateDialog(){
         AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-        alert.setTitle(getResources().getString(R.string.crear_usuario_titulo));
+        alert.setTitle(getResources().getString(R.string.txt_create_user_title));
 
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View editDialoglayout = inflater.inflate(R.layout.dialog_layout, null);
 
         alert.setView(editDialoglayout);
-        alert.setPositiveButton(getResources().getString(R.string.btn_aceptar), null);
-        alert.setNegativeButton(getResources().getString(R.string.btn_cancelar), null);
+        alert.setPositiveButton(getResources().getString(R.string.txt_btn_create_user), null);
 
         final AlertDialog dialog = alert.create();
         dialog.show();
 
-        final EditText userName = editDialoglayout.findViewById(R.id.edt_user_name);
+        final EditText userName = editDialoglayout.findViewById(R.id.edtUserName);
 
-        final EditText userBirthdate = editDialoglayout.findViewById(R.id.edt_user_birthdate);
+        final EditText userBirthdate = editDialoglayout.findViewById(R.id.edtUserBirthdate);
         userBirthdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
                     user.setBirthdate(DateUtils.readableDateToISO(userBirthdate.getText().toString()));
                     mainPresenter.createUser(user);
                 }
-                else Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_empty_fields), Toast.LENGTH_SHORT).show();
+                else Toast.makeText(getApplicationContext(), getResources().getString(R.string.txt_error_empty_username), Toast.LENGTH_SHORT).show();
             }
         });
     }

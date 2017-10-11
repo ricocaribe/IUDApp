@@ -178,14 +178,12 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
     @Override
     public void showSnackbar(){
         snackbarUndo = Snackbar
-                .make(mainDetailLayout, "User edited", Snackbar.LENGTH_LONG)
-                .setAction("UNDO", new View.OnClickListener() {
+                .make(mainDetailLayout, getResources().getString(R.string.txt_user_edited), Snackbar.LENGTH_LONG)
+                .setAction(getResources().getString(R.string.txt_btn_undo_edit).toUpperCase(), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         userDetailPresenter.updateUser(tempUser, true);
                         restoreUserDetails(true);
-                        Snackbar snackbar1 = Snackbar.make(mainDetailLayout, "User restored!", Snackbar.LENGTH_SHORT);
-                        snackbar1.show();
                     }
                 });
 
@@ -195,9 +193,9 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 
     public void showRemoveUserDialog(final int userId) {
     new AlertDialog.Builder(getActivity())
-            .setTitle(getResources().getString(R.string.eliminar_usuario_titulo))
-            .setMessage(getResources().getString(R.string.eliminar_usuario_mensaje))
-            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            .setTitle(getResources().getString(R.string.txt_delete_user_title))
+            .setMessage(getResources().getString(R.string.txt_delete_user_message))
+            .setPositiveButton(getResources().getString(R.string.txt_btn_delete_user), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     userDetailPresenter.removeUser(userId);
                 }

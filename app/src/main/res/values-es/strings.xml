@@ -1,42 +1,24 @@
 <resources>
     <string name="app_name">IUDapp</string>
 
-    <!--Dialogos y alertas-->
-    <string name="dialogo_carga_titulo">Cargando</string>
-    <string name="dialogo_carga_espere">Espere, consultando…</string>
-    <string name="mensaje_error_conn">Algo fue mal…</string>
-    <string name="mensaje_error_not_found">Usuario no encontrado…</string>
-    <string name="mensaje_error_internal">Error interno…</string>
-    <string name="mensaje_error_refresh">Actualizar</string>
-    <string name="btn_aceptar">Aceptar</string>
-    <string name="btn_cancelar">Cancelar</string>
+    <!--Create user-->
+    <string name="txt_create_user_title">Crear usuario</string>
+    <string name="txt_btn_create_user">Crear</string>
 
-    <!--Editar user-->
-    <string name="edt_nombre_usuario">Nombre</string>
-    <string name="edt_fecha_usuario">Nacimiento</string>
-    <string name="editar_usuario_titulo">Editar usuario</string>
-    <string name="editar_nombre_usuario_error">Nombre vacío</string>
-    <string name="editar_birthdate_usuario_error">Fecha vacía</string>
-    <string name="editado_usuario_mensaje">Usuario editado</string>
-    <string name="editar_btn_deshacer">Deshacer</string>
+    <!--Edit user-->
+    <string name="txt_user_edited">Usuario editado</string>
+    <string name="txt_btn_undo_edit">Deshacer</string>
+    <string name="txt_error_empty_username">Nombre no puede ser vacio.</string>
 
+    <!--Delete user-->
+    <string name="txt_delete_user_title">Borrar usuario</string>
+    <string name="txt_delete_user_message">¿Seguro que quieres eliminar este usuario?</string>
+    <string name="txt_btn_delete_user">Eliminar</string>
 
-    <!--Borrar user-->
-    <string name="eliminar_usuario_titulo">Borrar usuario</string>
-    <string name="eliminar_usuario_mensaje">¿Seguro que quieres eliminar este usuario?</string>
-    <string name="btn_eliminar_usuario">Eliminar</string>
-
-
-    <!--Crear user-->
-    <string name="crear_usuario_titulo">Crear usuario</string>
 
     <string name="titulo_spinner_letras">Elije una letra</string>
     <string name="default_spinner_tag">Todas</string>
 
-    <!--Dialogs-->
-    <string name="tv_getting_users">Cargando usuarios…</string>
-
     <!--Errors-->
     <string name="error_something_wrong">Algo fue mal, inténtalo de nuevo.</string>
-    <string name="error_empty_fields">Nombre no puede ser vacio.</string>
 </resources>

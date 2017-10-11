@@ -1,40 +1,24 @@
 <resources>
     <string name="app_name">IUDapp</string>
 
-    <!--Dialogos y alertas-->
-    <string name="dialogo_carga_titulo">Loading</string>
-    <string name="dialogo_carga_espere">Wait, loading…</string>
-    <string name="mensaje_error_conn">Something went wrong…</string>
-    <string name="mensaje_error_not_found">Usuer not found…</string>
-    <string name="mensaje_error_internal">Internal error…</string>
-    <string name="mensaje_error_refresh">Update</string>
-    <string name="btn_aceptar">Accept</string>
-    <string name="btn_cancelar">Cancel</string>
+    <!--Create user-->
+    <string name="txt_create_user_title">Create user</string>
+    <string name="txt_btn_create_user">Create</string>
 
-    <!--Editar user-->
-    <string name="edt_nombre_usuario">Name</string>
-    <string name="edt_fecha_usuario">Birthdate</string>
-    <string name="editar_usuario_titulo">Edit user</string>
-    <string name="editar_nombre_usuario_error">Empty name</string>
-    <string name="editar_birthdate_usuario_error">Empty birthdate</string>
-    <string name="editado_usuario_mensaje">User edited</string>
-    <string name="editar_btn_deshacer">Undo</string>
+    <!--Edit user-->
+    <string name="txt_user_edited">User edited</string>
+    <string name="txt_btn_undo_edit">Undo</string>
+    <string name="txt_error_empty_username">Name cannot be empty.</string>
 
-    <!--Borrar user-->
-    <string name="eliminar_usuario_titulo">Delete user</string>
-    <string name="eliminar_usuario_mensaje">Are you sure do you want to delete this user?</string>
-    <string name="btn_eliminar_usuario">Delete</string>
+    <!--Delete user-->
+    <string name="txt_delete_user_title">Delete user</string>
+    <string name="txt_delete_user_message">Are you sure do you want to delete this user?</string>
+    <string name="txt_btn_delete_user">Delete</string>
 
-    <!--Crear user-->
-    <string name="crear_usuario_titulo">Create user</string>
-
-    <string name="titulo_spinner_letras">Choose a letter</string>
-    <string name="default_spinner_tag">All</string>
-
-    <!--Dialogs-->
-    <string name="tv_getting_users">Loading users…</string>
+    <!--Spinner-->
+    <string name="txt_title_filter_spinner">Choose a letter</string>
+    <string name="txt_default_spinner_tag">All</string>
 
     <!--Errors-->
     <string name="error_something_wrong">Something went wrong, try again.</string>
-    <string name="error_empty_name">Name cannot be empty.</string>
 </resources>
