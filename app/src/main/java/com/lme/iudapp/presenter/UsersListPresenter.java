@@ -42,7 +42,7 @@ public class UsersListPresenter implements UsersListInteractor.UsersPresenter {
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
                 usersView.dismissProgressDialog();
-                usersView.showAlert(usersView.getContext().getResources().getString(R.string.error_something_wrong));
+                usersView.showAlert(usersView.getContext().getResources().getString(R.string.txt_error_something_wrong));
                 call.cancel();
                 t.printStackTrace();
             }
@@ -68,7 +68,7 @@ public class UsersListPresenter implements UsersListInteractor.UsersPresenter {
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 usersView.dismissProgressDialog();
-                usersView.showAlert(usersView.getContext().getResources().getString(R.string.error_something_wrong));
+                usersView.showAlert(usersView.getContext().getResources().getString(R.string.txt_error_something_wrong));
                 call.cancel();
                 t.printStackTrace();
             }

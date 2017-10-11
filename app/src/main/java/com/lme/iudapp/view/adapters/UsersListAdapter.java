@@ -35,8 +35,8 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.Pers
 
         PersonViewHolder(View itemView) {
             super(itemView);
-            userName = (TextView) itemView.findViewById(R.id.user_name);
-            userBirthdate = (TextView) itemView.findViewById(R.id.user_birthdate);
+            userName = itemView.findViewById(R.id.user_name);
+            userBirthdate = itemView.findViewById(R.id.user_birthdate);
 
             itemView.setOnClickListener(this);
         }

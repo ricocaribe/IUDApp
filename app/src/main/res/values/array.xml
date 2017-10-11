@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="letras">
-        <item>@string/default_spinner_tag</item>
+        <item>@string/txt_default_spinner_tag</item>
         <item>A</item>
         <item>B</item>
         <item>C</item>

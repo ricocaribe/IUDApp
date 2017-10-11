@@ -213,7 +213,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
         }
         else {
             tvUserDetailName.setText(user.getName());
-            Toast.makeText(getActivity(), getResources().getString(R.string.error_empty_name), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getResources().getString(R.string.txt_error_empty_name), Toast.LENGTH_SHORT).show();
         }
     }
 

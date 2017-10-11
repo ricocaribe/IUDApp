@@ -1,14 +1,24 @@
 <resources>
     <string name="app_name">IUDapp</string>
 
+    <!--Menu userlist-->
+    <string name="txt_menu_create_title">Create</string>
+
+    <!--Menu user_detail-->
+    <string name="txt_menu_delete_title">Delete</string>
+    <string name="txt_menu_edit_title">Edit</string>
+    <string name="txt_menu_close_title">Close</string>
+    <string name="txt_menu_save_title">Save</string>
+
     <!--Create user-->
     <string name="txt_create_user_title">Create user</string>
+    <string name="txt_create_user_name">Name</string>
+    <string name="txt_create_user_birthdate">Birthdate</string>
     <string name="txt_btn_create_user">Create</string>
 
     <!--Edit user-->
     <string name="txt_user_edited">User edited</string>
     <string name="txt_btn_undo_edit">Undo</string>
-    <string name="txt_error_empty_username">Name cannot be empty.</string>
 
     <!--Delete user-->
     <string name="txt_delete_user_title">Delete user</string>
@@ -16,9 +26,10 @@
     <string name="txt_btn_delete_user">Delete</string>
 
     <!--Spinner-->
-    <string name="txt_title_filter_spinner">Choose a letter</string>
+    <string name="txt_title_spinner_letters">Choose a letter</string>
     <string name="txt_default_spinner_tag">All</string>
 
     <!--Errors-->
-    <string name="error_something_wrong">Something went wrong, try again.</string>
+    <string name="txt_error_something_wrong">Something went wrong, try again.</string>
+    <string name="txt_error_empty_username">Name cannot be empty.</string>
 </resources>

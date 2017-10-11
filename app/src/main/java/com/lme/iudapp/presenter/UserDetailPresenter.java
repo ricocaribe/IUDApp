@@ -41,7 +41,7 @@ public class UserDetailPresenter implements UserDetailInteractor.UserDetailPrese
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 userDetailView.dismissProgressDialog();
-                userDetailView.showAlert(userDetailView.getContext().getResources().getString(R.string.error_something_wrong));
+                userDetailView.showAlert(userDetailView.getContext().getResources().getString(R.string.txt_error_something_wrong));
                 call.cancel();
                 t.printStackTrace();
             }
@@ -70,7 +70,7 @@ public class UserDetailPresenter implements UserDetailInteractor.UserDetailPrese
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 userDetailView.dismissProgressDialog();
-                userDetailView.showAlert(userDetailView.getContext().getResources().getString(R.string.error_something_wrong));
+                userDetailView.showAlert(userDetailView.getContext().getResources().getString(R.string.txt_error_something_wrong));
                 call.cancel();
                 t.printStackTrace();
             }

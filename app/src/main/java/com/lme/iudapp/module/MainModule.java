@@ -12,7 +12,7 @@ import dagger.Provides;
 public class MainModule {
 
     @Provides
-    public MainViewInteractor.MainPresenter provideMainViewPresenter(){
+    MainViewInteractor.MainPresenter provideMainViewPresenter(){
         return new MainViewPresenter();
     }
 }

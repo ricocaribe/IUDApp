@@ -12,7 +12,7 @@ import dagger.Provides;
 public class UserDetailModule {
 
     @Provides
-    public UserDetailInteractor.UserDetailPresenter provideUserDetailPresenter(){
+    UserDetailInteractor.UserDetailPresenter provideUserDetailPresenter(){
         return new UserDetailPresenter();
     }
 }

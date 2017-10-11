@@ -40,7 +40,7 @@ public class MainViewPresenter implements MainViewInteractor.MainPresenter {
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 mainView.dismissProgressDialog();
-                mainView.showAlert(mainView.getContext().getResources().getString(R.string.error_something_wrong));
+                mainView.showAlert(mainView.getContext().getResources().getString(R.string.txt_error_something_wrong));
                 call.cancel();
                 t.printStackTrace();
             }

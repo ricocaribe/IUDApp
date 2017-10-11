@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
     @Inject
     MainViewInteractor.MainPresenter mainPresenter;
 
-    private UserDetailFragment userDetailFragment;
     private AlertDialog pdChecking;
 
     @Override
@@ -87,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements MainViewInteracto
 
     @Override
     public void showUserDetailFragment(User user) {
-        userDetailFragment = UserDetailFragment.newInstance(user);
+        UserDetailFragment userDetailFragment = UserDetailFragment.newInstance(user);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.mainLayout, userDetailFragment);

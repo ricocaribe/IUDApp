@@ -1,24 +1,35 @@
 <resources>
     <string name="app_name">IUDapp</string>
 
+    <!--Menu userlist-->
+    <string name="txt_menu_create_title">Crear</string>
+
+    <!--Menu user_detail-->
+    <string name="txt_menu_delete_title">Borrar</string>
+    <string name="txt_menu_edit_title">Editar</string>
+    <string name="txt_menu_close_title">Cerrar</string>
+    <string name="txt_menu_save_title">Guardar</string>
+
     <!--Create user-->
     <string name="txt_create_user_title">Crear usuario</string>
+    <string name="txt_create_user_name">Nombre</string>
+    <string name="txt_create_user_birthdate">Fecha de nacimiento</string>
     <string name="txt_btn_create_user">Crear</string>
 
     <!--Edit user-->
     <string name="txt_user_edited">Usuario editado</string>
     <string name="txt_btn_undo_edit">Deshacer</string>
-    <string name="txt_error_empty_username">Nombre no puede ser vacio.</string>
 
     <!--Delete user-->
     <string name="txt_delete_user_title">Borrar usuario</string>
     <string name="txt_delete_user_message">¿Seguro que quieres eliminar este usuario?</string>
     <string name="txt_btn_delete_user">Eliminar</string>
 
-
-    <string name="titulo_spinner_letras">Elije una letra</string>
-    <string name="default_spinner_tag">Todas</string>
+    <!--Spinner-->
+    <string name="txt_title_spinner_letters">Elije una letra</string>
+    <string name="txt_default_spinner_tag">Todas</string>
 
     <!--Errors-->
-    <string name="error_something_wrong">Algo fue mal, inténtalo de nuevo.</string>
+    <string name="txt_error_something_wrong">Algo fue mal, inténtalo de nuevo.</string>
+    <string name="txt_error_empty_username">El nombre no puede estar vacio.</string>
 </resources>
