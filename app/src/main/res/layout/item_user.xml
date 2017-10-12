@@ -31,14 +31,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/user_name"
+                android:id="@+id/userName"
                 android:maxLines="1"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/user_birthdate"
+                android:id="@+id/userBirthdate"
                 android:maxLines="1"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1" />
 

@@ -14,6 +14,9 @@ import com.lme.iudapp.utils.DateUtils;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 
 public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.PersonViewHolder> {
 
@@ -29,14 +32,16 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.Pers
     }
 
     class PersonViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @InjectView(R.id.userName)
         TextView userName;
+        @InjectView(R.id.userBirthdate)
         TextView userBirthdate;
+
         int id;
 
         PersonViewHolder(View itemView) {
             super(itemView);
-            userName = itemView.findViewById(R.id.user_name);
-            userBirthdate = itemView.findViewById(R.id.user_birthdate);
+            ButterKnife.inject(this, itemView);
 
             itemView.setOnClickListener(this);
         }
@@ -67,5 +72,4 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.Pers
     public int getItemCount() {
         return users.size();
     }
-
 }

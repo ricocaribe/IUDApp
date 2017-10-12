@@ -27,6 +27,9 @@ import com.lme.iudapp.utils.DateUtils;
 
 import javax.inject.Inject;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import dagger.ObjectGraph;
 
 
@@ -35,17 +38,22 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
     @Inject
     UserDetailInteractor.UserDetailPresenter userDetailPresenter;
 
-    private MainViewInteractor.MainView mainView;
+    @InjectView(R.id.mainDetailLayout)
+    FrameLayout mainDetailLayout;
 
+    @InjectView(R.id.tvUserDetailBirthdate)
+    EditText tvUserDetailBirthdate;
+
+    @InjectView(R.id.tvUserDetailName)
+    EditText tvUserDetailName;
+
+    private MainViewInteractor.MainView mainView;
+    private static final String ARG_USER = "user";
     private User user;
     private User tempUser;
-    private static final String ARG_USER = "user";
     private MenuItem saveItem;
     private MenuItem closeItem;
     private MenuItem editItem;
-    private EditText tvUserDetailBirthdate;
-    private EditText tvUserDetailName;
-    private FrameLayout mainDetailLayout;
     private Snackbar snackbarUndo;
 
 
@@ -67,6 +75,21 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
         objectGraph.inject(this);
 
         userDetailPresenter.setVista(this);
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        user = (User) getArguments().get(ARG_USER);
+
+        View view = inflater.inflate(R.layout.fragment_user_detail, container, false);
+        ButterKnife.inject(this, view);
+
+        tvUserDetailName.setText(user.getName());
+        tvUserDetailBirthdate.setText(DateUtils.ISOToReadableDate(user.getBirthdate()));
+
+        return view;
     }
 
 
@@ -106,33 +129,6 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        user = (User) getArguments().get(ARG_USER);
-
-        View view = inflater.inflate(R.layout.fragment_user_detail, container, false);
-
-        mainDetailLayout = view.findViewById(R.id.mainDetailLayout);
-
-        tvUserDetailName = view.findViewById(R.id.tvUserDetailName);
-        tvUserDetailName.setText(user.getName());
-
-        tvUserDetailBirthdate = view.findViewById(R.id.tvUserDetailBirthdate);
-        tvUserDetailBirthdate.setText(DateUtils.ISOToReadableDate(user.getBirthdate()));
-        tvUserDetailBirthdate.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                DateDialog dialog=new DateDialog(v);
-                dialog.show(getActivity().getFragmentManager(), "DatePicker");
-            }
-        });
-
-        return view;
     }
 
 
@@ -200,6 +196,13 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
                 });
 
         snackbarUndo.show();
+    }
+
+
+    @OnClick(R.id.tvUserDetailBirthdate)
+    public void showDatePicker(){
+        DateDialog dialog=new DateDialog(tvUserDetailBirthdate);
+        dialog.show(getActivity().getFragmentManager(), "DatePicker");
     }
 
 

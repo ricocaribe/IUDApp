@@ -12,7 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import com.lme.iudapp.R;
 import com.lme.iudapp.interactor.MainViewInteractor;
@@ -25,19 +25,30 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnItemSelected;
 import dagger.ObjectGraph;
 
 
 public class UsersListFragment extends Fragment implements UsersListInteractor.UsersView {
 
-    public String currentFilterTag;
-    private MainViewInteractor.MainView mainView;
-    private SwipeRefreshLayout users_refresh_layout;
 
     @Inject
     UsersListInteractor.UsersPresenter usersPresenter;
-    private RecyclerView rvUsers;
+
+    @InjectView(R.id.usersListSwipeRefreshLayout)
+    SwipeRefreshLayout usersListSwipeRefreshLayout;
+
+    @InjectView(R.id.rvUsersList)
+    RecyclerView rvUsersList;
+
+    @InjectView(R.id.filterSpinner)
+    AppCompatSpinner filterSpinner;
+
+    private MainViewInteractor.MainView mainView;
     private UsersListAdapter usersListAdapter;
+    public String currentFilterTag;
 
     public static UsersListFragment newInstance() {
         return new UsersListFragment();
@@ -58,37 +69,24 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        rvUsers = view.findViewById(R.id.birthdates_rv);
-        rvUsers.setHasFixedSize(true);
+        ButterKnife.inject(this, view);
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
-        rvUsers.setLayoutManager(gridLayoutManager);
+        rvUsersList.setLayoutManager(gridLayoutManager);
+
         usersListAdapter = new UsersListAdapter(this);
 
         currentFilterTag = getActivity().getResources().getString(R.string.txt_default_spinner_tag);
 
-        users_refresh_layout = view.findViewById(R.id.users_refresh_layout);
-
-        users_refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        usersListSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 usersPresenter.getAllUsers(currentFilterTag);
             }
         });
 
-        AppCompatSpinner appCompatSpinner = view.findViewById(R.id.filterSpinner);
-        appCompatSpinner.setSelection(0);
-        appCompatSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                currentFilterTag = parent.getItemAtPosition(position).toString();
-                usersPresenter.getAllUsers(currentFilterTag);
-            }
+        filterSpinner.setSelection(0);
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
         return view;
     }
 
@@ -135,7 +133,7 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
     @Override
     public void dismissProgressDialog() {
         mainView.dismissProgressDialog();
-        if(users_refresh_layout.isRefreshing()) users_refresh_layout.setRefreshing(false);
+        if(usersListSwipeRefreshLayout.isRefreshing()) usersListSwipeRefreshLayout.setRefreshing(false);
     }
 
 
@@ -155,8 +153,15 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
         return getActivity();
     }
 
+    @OnItemSelected(R.id.filterSpinner)
+    public void spinnerItemSelected(Spinner spinner, int position) {
+        currentFilterTag = spinner.getItemAtPosition(position).toString();
+        usersPresenter.getAllUsers(currentFilterTag);
+    }
+
+
     public void setUsersListAdapter(List<User> users) {
         usersListAdapter.setUsers(users);
-        rvUsers.setAdapter(usersListAdapter);
+        rvUsersList.setAdapter(usersListAdapter);
     }
 }

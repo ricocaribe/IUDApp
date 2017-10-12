@@ -23,14 +23,14 @@
         android:background="@color/divider"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/users_refresh_layout"
+        android:id="@+id/usersListSwipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/birthdates_rv"/>
+            android:id="@+id/rvUsersList"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

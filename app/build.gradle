@@ -34,4 +34,5 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+    compile 'com.jakewharton:butterknife:6.1.0'
 }
