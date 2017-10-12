@@ -61,7 +61,7 @@ public class UsersListPresenter implements UsersListInteractor.UsersPresenter {
 
                 usersView.dismissProgressDialog();
 
-                if (usersResponse.isSuccessful()) usersView.goUserDetail(usersResponse.body());
+                if (usersResponse.isSuccessful()) usersView.showUserDetail(usersResponse.body());
                 else usersView.showAlert(usersResponse.message());
             }
 

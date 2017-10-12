@@ -21,10 +21,10 @@ import butterknife.InjectView;
 public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.PersonViewHolder> {
 
     private List<User> users;
-    private UsersListInteractor.UsersView usersView;
+    private UsersListInteractor.UsersPresenter usersPresenter;
 
-    public UsersListAdapter(UsersListInteractor.UsersView usersView) {
-        this.usersView = usersView;
+    public UsersListAdapter(UsersListInteractor.UsersPresenter usersPresenter) {
+        this.usersPresenter = usersPresenter;
     }
 
     public void setUsers(List<User> users) {
@@ -48,7 +48,7 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.Pers
 
         @Override
         public void onClick(View view) {
-            usersView.getUserInfo(users.get(getAdapterPosition()).id);
+            usersPresenter.getUser(users.get(getAdapterPosition()).id);
         }
     }
 

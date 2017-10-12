@@ -74,7 +74,7 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
         rvUsersList.setLayoutManager(gridLayoutManager);
 
-        usersListAdapter = new UsersListAdapter(this);
+        usersListAdapter = new UsersListAdapter(usersPresenter);
 
         currentFilterTag = getActivity().getResources().getString(R.string.txt_default_spinner_tag);
 
@@ -138,15 +138,10 @@ public class UsersListFragment extends Fragment implements UsersListInteractor.U
 
 
     @Override
-    public void goUserDetail(User user) {
+    public void showUserDetail(User user) {
         mainView.showUserDetailFragment(user);
     }
 
-
-    @Override
-    public void getUserInfo(int userId) {
-        usersPresenter.getUser(userId);
-    }
 
     @Override
     public Context getContext() {

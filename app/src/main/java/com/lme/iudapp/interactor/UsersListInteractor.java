@@ -14,8 +14,7 @@ public interface UsersListInteractor {
         void showProgressDialog();
         void dismissProgressDialog();
         void setUsersListAdapter(List<User> users);
-        void goUserDetail(User user);
-        void getUserInfo(int userId);
+        void showUserDetail(User user);
     }
 
     interface UsersPresenter {
