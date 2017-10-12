@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">IUDapp</string>
+    <string name="app_name">Birthdates</string>
 
     <!--Menu userlist-->
     <string name="txt_menu_create_title">Create</string>
