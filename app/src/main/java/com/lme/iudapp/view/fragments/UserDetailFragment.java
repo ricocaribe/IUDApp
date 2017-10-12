@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -51,9 +52,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
     private static final String ARG_USER = "user";
     private User user;
     private User tempUser;
-    private MenuItem saveItem;
-    private MenuItem closeItem;
-    private MenuItem editItem;
+    private Menu menu;
     private Snackbar snackbarUndo;
 
 
@@ -99,9 +98,7 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
         menu.clear();
         getActivity().getMenuInflater().inflate(R.menu.menu_user_detail, menu);
 
-        saveItem = menu.findItem(R.id.action_save);
-        closeItem = menu.findItem(R.id.action_close);
-        editItem = menu.findItem(R.id.action_edit);
+        this.menu = menu;
 
     }
 
@@ -194,7 +191,8 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
                         restoreUserDetails(true);
                     }
                 });
-
+        View snackBarView = snackbarUndo.getView();
+        snackBarView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryLight));
         snackbarUndo.show();
     }
 
@@ -234,9 +232,9 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 
 
     private void enableFields(){
-        saveItem.setVisible(true);
-        editItem.setVisible(false);
-        closeItem.setVisible(true);
+        menu.findItem(R.id.action_save).setVisible(true);
+        menu.findItem(R.id.action_edit).setVisible(false);
+        menu.findItem(R.id.action_close).setVisible(true);
         tvUserDetailName.setEnabled(true);
         tvUserDetailName.requestFocus();
         tvUserDetailBirthdate.setEnabled(true);
@@ -244,9 +242,9 @@ public class UserDetailFragment extends Fragment implements UserDetailInteractor
 
 
     private void disableFields(){
-        closeItem.setVisible(false);
-        saveItem.setVisible(false);
-        editItem.setVisible(true);
+        menu.findItem(R.id.action_close).setVisible(false);
+        menu.findItem(R.id.action_save).setVisible(false);
+        menu.findItem(R.id.action_edit).setVisible(true);
         tvUserDetailName.setEnabled(false);
         tvUserDetailName.clearFocus();
         tvUserDetailBirthdate.setEnabled(false);
